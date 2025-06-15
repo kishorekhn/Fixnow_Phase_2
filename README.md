@@ -1,4 +1,4 @@
-# Django Project Setup Guide
+# FIX NOW Project Setup Guide
 
 > **Python Version:** 3.13.2  
 > **pip Version:** 25.0.1
