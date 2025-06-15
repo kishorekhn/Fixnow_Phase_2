@@ -3,3 +3,4 @@ media/
 APP/__pycache__/
 APP/migrations/__pycache__/
 FixNow/__pycache__/
+.env
