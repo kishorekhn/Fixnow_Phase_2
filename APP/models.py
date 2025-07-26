@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 from django.db import models
+from django.contrib.auth.models import User
 
 
 def upload_image_path(instance, filename):
@@ -21,6 +22,16 @@ def upload_image_path(instance, filename):
         new_filename = f'file_{timestamp}.{ext}'
 
     return os.path.join(folder, new_filename)
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone_number = models.CharField(max_length=15, unique=True)
+    is_verified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.phone_number
 
 
 class Service(models.Model):
@@ -60,3 +71,42 @@ class ServiceItemImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.service_item.name}"
+
+
+class CartItem(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='cart_items')
+    service_item = models.ForeignKey(ServiceItem, on_delete=models.CASCADE)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+
+class FavoriteItem(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='favorite_items')
+    service_item = models.ForeignKey(ServiceItem, on_delete=models.CASCADE)
+    added_at = models.DateTimeField(auto_now_add=True)
+    
+
+
+class Order(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='orders')
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('pending', 'Pending'),
+            ('confirmed', 'Confirmed'),
+            ('completed', 'Completed'),
+            ('cancelled', 'Cancelled')
+        ],
+        default='pending'
+    )
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    def __str__(self):
+        return f"Order #{self.id} by {self.user.phone_number}"
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+    service_item = models.ForeignKey(ServiceItem, on_delete=models.CASCADE)
+    price_at_order_time = models.DecimalField(max_digits=10, decimal_places=2)
+    added_at = models.DateTimeField(auto_now_add=True)
