@@ -1,0 +1,15 @@
+{% extends 'base.htm' %}
+{% block title %}Login | FIX-NOW{% endblock title %}
+
+{% block content %}
+{% include "Utils/navbar.htm" %} 
+
+<div class="container mt-5">
+    <h2>Login with Mobile Number</h2>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="phone_number" placeholder="Enter phone number" class="form-control mb-3" required>
+        <button type="submit" class="btn btn-primary">Send OTP</button>
+    </form>
+</div>
+{% endblock content %}

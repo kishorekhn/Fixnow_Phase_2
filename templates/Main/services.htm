@@ -1,0 +1,129 @@
+{% extends 'base.htm' %}
+
+{% block title %}
+{{ service.name }} Items | FIX-NOW
+{% endblock title %}
+
+{% block content %}
+{% include "Utils/navbar.htm" %} 
+
+<div class="container mt-5">
+    <h1 class="display-4 fw-bold text-center mb-4">{{ service.name }}</h1>
+    {% if service.description %}
+    <p class="text-center text-muted">{{ service.description }}</p>
+    {% endif %}
+
+    <div class="row mt-4">
+        {% for item in items %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                {% if item.main_image %}
+                <img src="{{ item.main_image.url }}" class="card-img-top" alt="{{ item.name }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.name }}</h5>
+                    <p class="card-text">{{ item.description|default:"No description."|truncatewords:20 }}</p>
+
+                    {% if item.price %}
+                    <p class="fw-bold mb-1">Price: ₹{{ item.price }}</p>
+                    {% endif %}
+
+                    {% if item.duration_minutes %}
+                    <p class="fw-light mb-2">Duration: {{ item.duration_minutes }} minutes</p>
+                    {% endif %}
+
+                    {% if item.popular %}
+                    <span class="badge bg-success">Popular</span>
+                    {% endif %}
+
+                    {% if item.shutdown %}
+                    <span class="badge bg-danger">Shutdown</span>
+                    {% endif %}
+
+                    <button class="btn btn-warning mt-3 toggle-cart-btn w-100" data-item-id="{{ item.id }}">
+                        🛒 Add to Cart
+                    </button>
+
+                    <button class="btn btn-outline-danger mt-2 favorite-btn w-100" data-item-id="{{ item.id }}">
+                        ❤️ Add to Favorite
+                    </button>
+                </div>
+                <div class="card-footer text-end text-muted small">
+                    Created: {{ item.created_at|date:"M d, Y" }}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center">No service items available for this service.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll('.toggle-cart-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const itemId = this.dataset.itemId;
+
+        fetch("{% url 'toggle_cart' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ item_id: itemId }),
+            redirect: "follow"
+        })
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+                return;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === "added") {
+                alert("Item added to cart!");
+            } else if (data.status === "removed") {
+                alert("Item removed from cart!");
+            } else if (data.status === "error") {
+                alert("Error: " + data.message);
+            }
+        });
+    });
+});
+
+document.querySelectorAll('.favorite-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const itemId = this.dataset.itemId;
+
+        fetch("{% url 'toggle_favorite' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ item_id: itemId }),
+            redirect: "follow"
+        })
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+                return;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === "added") {
+                alert("Added to favorites!");
+            } else if (data.status === "removed") {
+                alert("Removed from favorites!");
+            } else if (data.status === "error") {
+                alert("Error: " + data.message);
+            }
+        });
+    });
+});
+</script>
+{% endblock scripts %}
