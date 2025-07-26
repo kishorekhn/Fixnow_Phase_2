@@ -1,0 +1,16 @@
+{% extends 'base.htm' %}
+{% block title %}Verify OTP | FIX-NOW{% endblock title %}
+
+{% block content %}
+{% include "Utils/navbar.htm" %} 
+
+<div class="container mt-5">
+    <h2>Enter OTP</h2>
+    {% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="otp" placeholder="Enter OTP" class="form-control mb-3" required>
+        <button type="submit" class="btn btn-success">Verify OTP</button>
+    </form>
+</div>
+{% endblock content %}

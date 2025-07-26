@@ -5,5 +5,39 @@ Home | FIX-NOW
 {% endblock title %}
 
 {% block content %}
-<h1 class="display-1 fw-bold text-center">Testing Template</h1>
+{% include "Utils/navbar.htm" %} 
+<div class="container mt-5">
+    <h1 class="display-4 fw-bold text-center mb-4">Our Services</h1>
+
+    <div class="row">
+        {% for service in services %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                {% if service.image %}
+                <img src="{{ service.image.url }}" class="card-img-top" alt="{{ service.name }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ service.name }}</h5>
+                    <p class="card-text">{{ service.description|default:"No description."|truncatewords:20 }}</p>
+
+                    {% if service.popular %}
+                    <span class="badge bg-success">Popular</span>
+                    {% endif %}
+
+                    {% if service.shutdown %}
+                    <span class="badge bg-danger">Shutdown</span>
+                    {% endif %}
+                    
+                    <div class="mt-3">
+                        <a href="{% url 'service_items' service.id %}" class="btn btn-primary w-100">View Items</a>
+                    </div>
+                </div>
+                <div class="card-footer text-end text-muted small">
+                    Created: {{ service.created_at|date:"M d, Y" }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock content %}

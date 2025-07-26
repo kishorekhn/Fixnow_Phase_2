@@ -1,15 +1,13 @@
 {% extends 'base.htm' %}
 
-{% block title %}My Orders | FIX-NOW{% endblock title %}
+{% block title %}My Favorites | FIX-NOW{% endblock title %}
 
 {% block content %}
-{% include "Utils/navbar.htm" %} 
-
 <div class="container mt-5">
-    <h2 class="text-center mb-4">My Orders</h2>
+    <h2 class="text-center mb-4">My Favorite Items</h2>
 
     <div class="row">
-        {% for item in cart_items %}
+        {% for item in favorite_items %}
         <div class="col-md-4 mb-4">
             <div class="card h-100 shadow-sm">
                 {% if item.service_item.main_image %}
@@ -21,14 +19,14 @@
                     <p class="fw-bold">Price: ₹{{ item.service_item.price }}</p>
                     <p class="small text-muted">Added on: {{ item.added_at|date:"M d, Y H:i" }}</p>
 
-                    <button class="btn btn-danger w-100 remove-cart-btn mt-2" data-item-id="{{ item.service_item.id }}">
-                        🗑️ Remove from Cart
+                    <button class="btn btn-danger w-100 remove-fav-btn mt-2" data-item-id="{{ item.service_item.id }}">
+                        🗑️ Remove from Favorites
                     </button>
                 </div>
             </div>
         </div>
         {% empty %}
-        <p class="text-center">You have no orders yet.</p>
+        <p class="text-center">You have no favorites yet.</p>
         {% endfor %}
     </div>
 </div>
@@ -36,11 +34,11 @@
 
 {% block scripts %}
 <script>
-document.querySelectorAll('.remove-cart-btn').forEach(button => {
+document.querySelectorAll('.remove-fav-btn').forEach(button => {
     button.addEventListener('click', function() {
         const itemId = this.dataset.itemId;
 
-        fetch("{% url 'toggle_cart' %}", {
+        fetch("{% url 'toggle_favorite' %}", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -58,8 +56,8 @@ document.querySelectorAll('.remove-cart-btn').forEach(button => {
         })
         .then(data => {
             if (data.status === "removed") {
-                alert("Removed from cart!");
-                location.reload();
+                alert("Removed from favorites!");
+                location.reload(); 
             }
         });
     });
