@@ -9,7 +9,7 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', views.login_view, name='login'),
-    path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),  
+    path('logout/', views.logout_view, name='logout'),
     path('',views.home,name='home'),
     path('services/<int:service_id>/', views.service_items, name='service_items'),
     path('verify-otp/', views.verify_otp_view, name='verify_otp'),

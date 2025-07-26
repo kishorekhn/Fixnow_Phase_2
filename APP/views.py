@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages  
 from .models import UserProfile, ServiceItem, CartItem, Service,FavoriteItem
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -15,13 +15,17 @@ def login_view(request):
         otp = '123456' 
 
         request.session['otp'] = otp
-        request.session['phone_number'] = phone
+        request.session['phone_number'] = str(phone)
         
         # Dummy Otp Verification without twilio
         
         return redirect('verify_otp')
 
     return render(request, 'Auth/login.htm')
+
+def logout_view(request):
+    logout(request)
+    return redirect('home')
 
 def verify_otp_view(request):
     if request.method == 'POST':
@@ -83,9 +87,19 @@ def toggle_cart(request):
 
         try:
             service_item = ServiceItem.objects.get(id=item_id)
-            user_profile = UserProfile.objects.get(user=request.user)
 
-            cart_item, created = CartItem.objects.get_or_create(user=user_profile, service_item=service_item)
+            user_profile, created = UserProfile.objects.get_or_create(
+                user=request.user,
+                defaults={
+                    'phone_number': f'999{request.user.id}',
+                    'is_verified': True
+                }
+            )
+
+            cart_item, created = CartItem.objects.get_or_create(
+                user=user_profile,
+                service_item=service_item
+            )
 
             if not created:
                 cart_item.delete()
@@ -109,12 +123,22 @@ def toggle_favorite(request):
 
         try:
             service_item = ServiceItem.objects.get(id=item_id)
-            user_profile = UserProfile.objects.get(user=request.user)
 
-            favorite, created = FavoriteItem.objects.get_or_create(user=user_profile, service_item=service_item)
+            user_profile, created = UserProfile.objects.get_or_create(
+                user=request.user,
+                defaults={
+                    'phone_number': f'999{request.user.id}',
+                    'is_verified': True
+                }
+            )
+
+            favorite_item, created = FavoriteItem.objects.get_or_create(
+                user=user_profile,
+                service_item=service_item
+            )
 
             if not created:
-                favorite.delete()
+                favorite_item.delete()
                 return JsonResponse({'status': 'removed'})
             else:
                 return JsonResponse({'status': 'added'})
