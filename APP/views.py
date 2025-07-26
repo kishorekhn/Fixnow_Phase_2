@@ -124,7 +124,6 @@ def toggle_favorite(request):
         try:
             service_item = ServiceItem.objects.get(id=item_id)
 
-            # ✅ Get or create user profile
             user_profile, created = UserProfile.objects.get_or_create(
                 user=request.user,
                 defaults={
