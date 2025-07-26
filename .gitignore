@@ -1,5 +1,4 @@
 venv/
-media/
 APP/__pycache__/
 APP/migrations/__pycache__/
 FixNow/__pycache__/
