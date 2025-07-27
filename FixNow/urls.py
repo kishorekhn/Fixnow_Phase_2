@@ -11,6 +11,7 @@ urlpatterns = [
     path('',views.home,name='home'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+    path('services/', views.services, name='services'),
     path('services/<int:service_id>/', views.service_items, name='service_items'),
     path('verify-otp/', views.verify_otp_view, name='verify_otp'),
     path('toggle-cart/', views.toggle_cart, name='toggle_cart'), 
