@@ -4,12 +4,614 @@
 {% block content %}
 {% include "Utils/navbar.htm" %} 
 
-<div class="container mt-5">
-    <h2>Login with Mobile Number</h2>
-    <form method="post">
-        {% csrf_token %}
-        <input type="text" name="phone_number" placeholder="Enter phone number" class="form-control mb-3" required>
-        <button type="submit" class="btn btn-primary">Send OTP</button>
-    </form>
-</div>
+<!-- Login Section -->
+<section class="login-section">
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100">
+            <div class="col-lg-5 col-md-7 col-sm-9">
+                <!-- Login Card -->
+                <div class="login-card">
+                    <!-- Header -->
+                    <div class="login-header">
+                        <div class="login-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h2 class="login-title">Welcome Back</h2>
+                        <p class="login-subtitle">Enter your mobile number to access your FIX-NOW account</p>
+                    </div>
+
+                    <!-- Login Form -->
+                    <div class="login-form">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <!-- Phone Input Group -->
+                            <div class="input-group">
+                                <div class="input-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <input type="tel" 
+                                       name="phone_number" 
+                                       placeholder="Enter mobile number" 
+                                       class="form-control-custom" 
+                                       id="phoneInput"
+                                       maxlength="10"
+                                       pattern="[0-9]{10}"
+                                       required>
+                            </div>
+                            <div class="input-help">
+                                <small>Enter your 10-digit mobile number</small>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn-login">
+                                <span class="btn-text">Send OTP</span>
+                                <span class="btn-icon">
+                                    <i class="fas fa-paper-plane"></i>
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Footer Info -->
+                    <div class="login-footer">
+                        <div class="security-info">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Your data is secure with us</span>
+                        </div>
+                        <div class="help-text">
+                            <p>Need help? <a href="tel:+918098606019">Call +91 8098606019</a></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div class="login-features">
+                    <div class="feature-item">
+                        <i class="fas fa-tools"></i>
+                        <span>Expert Technicians</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-clock"></i>
+                        <span>24x7 Support</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-star"></i>
+                        <span>Quality Service</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+/* Import matching styles */
+:root {
+    --primary-color: #2C2C2C;
+    --accent-color: #00A699;
+    --text-color: #6F6F6F;
+    --background-color: #F7F7F7;
+    --white: #FFFFFF;
+    --hover-color: #008C84;
+    --light-gray: #F8F9FA;
+    --border-color: #E9ECEF;
+    --success-color: #28a745;
+}
+
+body {
+    background: linear-gradient(135deg, var(--background-color) 0%, #e8f4f8 100%);
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+}
+
+/* Login Section */
+.login-section {
+    padding: 100px 0 60px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+/* Login Card */
+.login-card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 50px 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 166, 153, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.login-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-color), var(--hover-color));
+}
+
+/* Login Header */
+.login-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.login-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--accent-color), var(--hover-color));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    color: white;
+    font-size: 2rem;
+    box-shadow: 0 8px 25px rgba(0, 166, 153, 0.3);
+}
+
+.login-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 12px;
+    line-height: 1.2;
+}
+
+.login-subtitle {
+    color: var(--text-color);
+    font-size: 1.1rem;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+/* Form Styles */
+.login-form {
+    margin-bottom: 30px;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.input-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent-color);
+    font-size: 1.1rem;
+    z-index: 2;
+}
+
+.form-control-custom {
+    width: 100%;
+    padding: 18px 20px 18px 55px;
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    background: var(--white);
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.form-control-custom:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(0, 166, 153, 0.1);
+    transform: translateY(-1px);
+}
+
+.form-control-custom::placeholder {
+    color: var(--text-color);
+    font-weight: 400;
+}
+
+.input-help {
+    margin-bottom: 30px;
+    padding-left: 20px;
+}
+
+.input-help small {
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+/* Login Button */
+.btn-login {
+    width: 100%;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, var(--accent-color), var(--hover-color));
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 166, 153, 0.4);
+}
+
+.btn-login:active {
+    transform: translateY(0);
+}
+
+.btn-login::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-login:hover::before {
+    left: 100%;
+}
+
+.btn-text {
+    position: relative;
+    z-index: 1;
+}
+
+.btn-icon {
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease;
+}
+
+.btn-login:hover .btn-icon {
+    transform: translateX(4px);
+}
+
+/* Login Footer */
+.login-footer {
+    text-align: center;
+    padding-top: 30px;
+    border-top: 1px solid var(--border-color);
+}
+
+.security-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--success-color);
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 16px;
+}
+
+.security-info i {
+    font-size: 1.1rem;
+}
+
+.help-text p {
+    color: var(--text-color);
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.help-text a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.help-text a:hover {
+    color: var(--hover-color);
+    text-decoration: underline;
+}
+
+/* Login Features */
+.login-features {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding: 20px 0;
+}
+
+.feature-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.feature-item i {
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    margin-bottom: 4px;
+}
+
+/* Phone Input Validation */
+.form-control-custom:invalid {
+    border-color: #dc3545;
+}
+
+.form-control-custom:valid {
+    border-color: var(--success-color);
+}
+
+/* Loading State */
+.btn-login.loading {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.btn-login.loading .btn-text {
+    opacity: 0;
+}
+
+.btn-login.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .login-section {
+        padding: 80px 0 40px;
+    }
+    
+    .login-card {
+        padding: 40px 30px;
+        margin: 20px;
+        border-radius: 20px;
+    }
+    
+    .login-title {
+        font-size: 1.8rem;
+    }
+    
+    .login-subtitle {
+        font-size: 1rem;
+    }
+    
+    .login-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 1.8rem;
+    }
+    
+    .form-control-custom {
+        padding: 16px 18px 16px 50px;
+        font-size: 1rem;
+    }
+    
+    .input-icon {
+        left: 18px;
+        font-size: 1rem;
+    }
+    
+    .btn-login {
+        padding: 16px 20px;
+        font-size: 1rem;
+    }
+    
+    .login-features {
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+    }
+    
+    .feature-item {
+        flex-direction: row;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-card {
+        padding: 30px 20px;
+        margin: 15px;
+    }
+    
+    .login-title {
+        font-size: 1.6rem;
+    }
+    
+    .login-features {
+        margin-top: 30px;
+    }
+}
+
+/* Animation for card entrance */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-card {
+    animation: slideUp 0.6s ease-out;
+}
+
+/* Focus styles for accessibility */
+.btn-login:focus {
+    outline: 3px solid rgba(0, 166, 153, 0.3);
+    outline-offset: 2px;
+}
+
+.form-control-custom:focus {
+    outline: none;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const phoneInput = document.getElementById('phoneInput');
+    const loginBtn = document.querySelector('.btn-login');
+    const form = document.querySelector('form');
+
+    // Phone number formatting and validation
+    phoneInput.addEventListener('input', function(e) {
+        // Remove non-numeric characters
+        let value = e.target.value.replace(/\D/g, '');
+        
+        // Limit to 10 digits
+        if (value.length > 10) {
+            value = value.slice(0, 10);
+        }
+        
+        e.target.value = value;
+        
+        // Visual feedback
+        if (value.length === 10) {
+            e.target.classList.add('valid');
+            e.target.classList.remove('invalid');
+        } else {
+            e.target.classList.remove('valid');
+            if (value.length > 0) {
+                e.target.classList.add('invalid');
+            } else {
+                e.target.classList.remove('invalid');
+            }
+        }
+    });
+
+    // Form submission with loading state
+    form.addEventListener('submit', function(e) {
+        const phoneNumber = phoneInput.value.trim();
+        
+        // Validate phone number
+        if (phoneNumber.length !== 10 || !/^\d{10}$/.test(phoneNumber)) {
+            e.preventDefault();
+            phoneInput.focus();
+            phoneInput.classList.add('invalid');
+            showMessage('Please enter a valid 10-digit mobile number', 'error');
+            return;
+        }
+
+        // Add loading state
+        loginBtn.classList.add('loading');
+        loginBtn.disabled = true;
+        
+        // Show success message
+        showMessage('Sending OTP to +91 ' + phoneNumber, 'success');
+    });
+
+    // Auto-focus on phone input
+    phoneInput.focus();
+
+    // Add enter key support
+    phoneInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            form.submit();
+        }
+    });
+});
+
+// Show message function
+function showMessage(message, type) {
+    // Remove existing messages
+    const existingAlert = document.querySelector('.alert-message');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
+
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const iconClass = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle';
+    
+    const alertHtml = `
+        <div class="alert-message ${alertClass}" style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            padding: 16px 20px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 300px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            animation: slideIn 0.3s ease-out;
+            background: ${type === 'success' ? 'var(--success-color)' : '#dc3545'};
+        ">
+            <i class="${iconClass}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', alertHtml);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        const alert = document.querySelector('.alert-message');
+        if (alert) {
+            alert.style.animation = 'slideOut 0.3s ease-in';
+            setTimeout(() => alert.remove(), 300);
+        }
+    }, 4000);
+}
+
+// Add slide animations for messages
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>
+
 {% endblock content %}
