@@ -1,70 +1,784 @@
 {% extends 'base.htm' %}
 
 {% block title %}
-{{ service.name }} Items | FIX-NOW
+{{ service.name }} Items | FIX-NOW - Home Appliance Services
 {% endblock title %}
 
 {% block content %}
-{% include "Utils/navbar.htm" %} 
+{% include "Utils/navbar.htm" %}
 
-<div class="container mt-5">
-    <h1 class="display-4 fw-bold text-center mb-4">{{ service.name }}</h1>
-    {% if service.description %}
-    <p class="text-center text-muted">{{ service.description }}</p>
-    {% endif %}
-
-    <div class="row mt-4">
-        {% for item in items %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                {% if item.main_image %}
-                <img src="{{ item.main_image.url }}" class="card-img-top" alt="{{ item.name }}">
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ item.name }}</h5>
-                    <p class="card-text">{{ item.description|default:"No description."|truncatewords:20 }}</p>
-
-                    {% if item.price %}
-                    <p class="fw-bold mb-1">Price: ₹{{ item.price }}</p>
+<!-- Service Header -->
+<section class="service-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="header-content">
+                    <div class="breadcrumb-nav">
+                        <a href="{% url 'home' %}" class="breadcrumb-link">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                        <i class="fas fa-chevron-right breadcrumb-separator"></i>
+                        <span class="breadcrumb-current">{{ service.name }}</span>
+                    </div>
+                    <h1 class="service-title">
+                        <i class="fas fa-tools me-3"></i>
+                        {{ service.name }}
+                    </h1>
+                    {% if service.description %}
+                    <p class="service-subtitle">{{ service.description }}</p>
+                    {% else %}
+                    <p class="service-subtitle">Professional home appliance services with expert technicians</p>
                     {% endif %}
-
-                    {% if item.duration_minutes %}
-                    <p class="fw-light mb-2">Duration: {{ item.duration_minutes }} minutes</p>
-                    {% endif %}
-
-                    {% if item.popular %}
-                    <span class="badge bg-success">Popular</span>
-                    {% endif %}
-
-                    {% if item.shutdown %}
-                    <span class="badge bg-danger">Shutdown</span>
-                    {% endif %}
-
-                    <button class="btn btn-warning mt-3 toggle-cart-btn w-100" data-item-id="{{ item.id }}">
-                        🛒 Add to Cart
-                    </button>
-
-                    <button class="btn btn-outline-danger mt-2 favorite-btn w-100" data-item-id="{{ item.id }}">
-                        ❤️ Add to Favorite
-                    </button>
                 </div>
-                <div class="card-footer text-end text-muted small">
-                    Created: {{ item.created_at|date:"M d, Y" }}
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">{{ items|length }}</span>
+                        <span class="stat-label">Available Services</span>
+                    </div>
                 </div>
             </div>
         </div>
-        {% empty %}
-        <p class="text-center">No service items available for this service.</p>
-        {% endfor %}
     </div>
-</div>
-{% endblock content %}
+</section>
 
-{% block scripts %}
+<!-- Service Items Content -->
+<section class="service-items-section">
+    <div class="container">
+        {% if items %}
+        <!-- Service Overview Card -->
+        <div class="service-overview-card mb-5">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h3 class="overview-title">
+                        <i class="fas fa-list-check me-2"></i>
+                        Available {{ service.name }} Services
+                    </h3>
+                    <p class="overview-text">Choose from our comprehensive range of professional services</p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <div class="overview-actions">
+                        <a href="tel:+918098606019" class="btn btn-accent btn-lg">
+                            <i class="fas fa-phone me-2"></i>Call Expert
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Items Grid -->
+        <div class="row g-4">
+            {% for item in items %}
+            <div class="col-xl-4 col-lg-6 col-md-6">
+                <div class="service-item-card" data-item-id="{{ item.id }}">
+                    <!-- Service Badges -->
+                    <div class="service-badges">
+                        {% if item.popular %}
+                        <div class="service-badge popular-badge">
+                            <i class="fas fa-star"></i>
+                            <span>Popular</span>
+                        </div>
+                        {% endif %}
+                        {% if item.shutdown %}
+                        <div class="service-badge shutdown-badge">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Unavailable</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Service Image -->
+                    <div class="service-image">
+                        {% if item.main_image %}
+                        <img src="{{ item.main_image.url }}" alt="{{ item.name }}" class="img-fluid">
+                        {% else %}
+                        <div class="placeholder-image">
+                            <i class="fas fa-wrench"></i>
+                        </div>
+                        {% endif %}
+                        <div class="image-overlay">
+                            <div class="overlay-content">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Details -->
+                    <div class="service-content">
+                        <div class="service-header">
+                            <h4 class="service-name">{{ item.name }}</h4>
+                            <div class="service-category">
+                                <i class="fas fa-tag me-1"></i>
+                                <span>{{ service.name }}</span>
+                            </div>
+                        </div>
+
+                        <p class="service-description">
+                            {{ item.description|default:"Professional service with expert technicians and quality guarantee."|truncatewords:15 }}
+                        </p>
+
+                        <!-- Service Meta Info -->
+                        <div class="service-meta">
+                            {% if item.price %}
+                            <div class="meta-row">
+                                <div class="meta-item">
+                                    <i class="fas fa-rupee-sign text-accent"></i>
+                                    <span class="meta-label">Price:</span>
+                                    <span class="meta-value price-value">₹{{ item.price }}</span>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if item.duration_minutes %}
+                            <div class="meta-row">
+                                <div class="meta-item">
+                                    <i class="fas fa-clock text-accent"></i>
+                                    <span class="meta-label">Duration:</span>
+                                    <span class="meta-value">{{ item.duration_minutes }} mins</span>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="meta-row">
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar-plus text-accent"></i>
+                                    <span class="meta-label">Available:</span>
+                                    <span class="meta-value">{{ item.created_at|date:"M d, Y" }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="service-actions">
+                            {% if not item.shutdown %}
+                            <button class="btn btn-accent flex-fill me-2" onclick="bookService('{{ item.name }}', '{{ item.id }}')">
+                                <i class="fas fa-phone me-2"></i>Book Now
+                            </button>
+                            <button class="btn btn-outline-primary me-2 toggle-cart-btn" data-item-id="{{ item.id }}" title="Add to cart">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                            <button class="btn btn-outline-danger favorite-btn" data-item-id="{{ item.id }}" title="Add to favorites">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                            {% else %}
+                            <button class="btn btn-secondary flex-fill" disabled>
+                                <i class="fas fa-ban me-2"></i>Currently Unavailable
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section mt-5">
+            <div class="cta-card">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h3 class="cta-title">Need Help Choosing the Right Service?</h3>
+                        <p class="cta-text">Our expert technicians are here to help you select the perfect {{ service.name|lower }} service for your needs. Get professional consultation and same-day service booking.</p>
+                    </div>
+                    <div class="col-lg-4 text-lg-end">
+                        <div class="cta-actions">
+                            <a href="tel:+918098606019" class="btn btn-accent btn-lg">
+                                <i class="fas fa-phone me-2"></i>Call Now
+                            </a>
+                            <a href="https://wa.me/918098606019" class="btn btn-success btn-lg ms-2" target="_blank">
+                                <i class="fab fa-whatsapp me-2"></i>WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-content">
+                <div class="empty-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h3 class="empty-title">No Services Available</h3>
+                <p class="empty-text">Sorry, there are currently no {{ service.name|lower }} services available. Please check back later or contact us for more information.</p>
+                <div class="empty-actions">
+                    <a href="{% url 'home' %}#services" class="btn btn-accent btn-lg">
+                        <i class="fas fa-arrow-left me-2"></i>Browse Other Services
+                    </a>
+                    <a href="tel:+918098606019" class="btn btn-outline-primary btn-lg ms-3">
+                        <i class="fas fa-phone me-2"></i>Contact Us
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<style>
+/* Import matching styles */
+:root {
+    --primary-color: #2C2C2C;
+    --accent-color: #00A699;
+    --text-color: #6F6F6F;
+    --background-color: #F7F7F7;
+    --white: #FFFFFF;
+    --hover-color: #008C84;
+    --light-gray: #F8F9FA;
+    --border-color: #E9ECEF;
+    --danger-color: #dc3545;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --secondary-color: #6c757d;
+}
+
+body {
+    background-color: var(--background-color);
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Service Header */
+.service-header {
+    background: linear-gradient(135deg, var(--white) 0%, var(--light-gray) 100%);
+    padding: 120px 0 60px;
+    margin-top: -20px;
+}
+
+.breadcrumb-nav {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.breadcrumb-link {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.breadcrumb-link:hover {
+    color: var(--hover-color);
+}
+
+.breadcrumb-separator {
+    color: var(--text-color);
+    margin: 0 8px;
+    font-size: 0.8rem;
+}
+
+.breadcrumb-current {
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.header-content .service-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.service-title i {
+    color: var(--accent-color);
+}
+
+.service-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    margin-bottom: 0;
+    line-height: 1.6;
+}
+
+.header-stats {
+    text-align: center;
+    background: var(--white);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.stat-number {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 1rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+/* Service Items Section */
+.service-items-section {
+    padding: 60px 0 80px;
+}
+
+/* Service Overview Card */
+.service-overview-card {
+    background: var(--white);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid var(--accent-color);
+}
+
+.overview-title {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.overview-text {
+    color: var(--text-color);
+    margin-bottom: 0;
+    font-size: 1rem;
+}
+
+/* Service Item Cards */
+.service-item-card {
+    background: var(--white);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    height: 100%;
+}
+
+.service-item-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+.service-badges {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.service-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.popular-badge {
+    background: rgba(255, 193, 7, 0.9);
+    color: var(--primary-color);
+}
+
+.shutdown-badge {
+    background: rgba(220, 53, 69, 0.9);
+    color: white;
+}
+
+.service-image {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+}
+
+.service-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.service-item-card:hover .service-image img {
+    transform: scale(1.05);
+}
+
+.placeholder-image {
+    height: 100%;
+    background: linear-gradient(135deg, var(--accent-color), var(--hover-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.service-item-card:hover .image-overlay {
+    opacity: 1;
+}
+
+.overlay-content i {
+    color: white;
+    font-size: 2rem;
+}
+
+/* Service Content */
+.service-content {
+    padding: 24px;
+}
+
+.service-header {
+    margin-bottom: 16px;
+}
+
+.service-name {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.service-category {
+    color: var(--text-color);
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+}
+
+.service-description {
+    color: var(--text-color);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+/* Service Meta */
+.service-meta {
+    background: var(--light-gray);
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.meta-row {
+    margin-bottom: 8px;
+}
+
+.meta-row:last-child {
+    margin-bottom: 0;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.meta-label {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.meta-value {
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.price-value {
+    color: var(--accent-color);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+/* Action Buttons */
+.service-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-accent {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+    font-weight: 500;
+    padding: 10px 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.btn-accent:hover {
+    background-color: var(--hover-color);
+    border-color: var(--hover-color);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0, 166, 153, 0.3);
+}
+
+.btn-outline-primary {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background: transparent;
+    padding: 10px 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-outline-danger {
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+    background: transparent;
+    padding: 10px 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-danger:hover {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: white;
+    cursor: not-allowed;
+}
+
+/* CTA Section */
+.cta-section {
+    margin-top: 60px;
+}
+
+.cta-card {
+    background: linear-gradient(135deg, var(--primary-color), #1a1a1a);
+    color: white;
+    padding: 50px 40px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+.cta-title {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.cta-text {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.1rem;
+    margin-bottom: 0;
+    line-height: 1.6;
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #218838;
+    transform: translateY(-1px);
+}
+
+/* Empty State */
+.empty-state {
+    padding: 80px 0;
+    text-align: center;
+}
+
+.empty-content {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.empty-icon {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, var(--accent-color), var(--hover-color));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 30px;
+    color: white;
+    font-size: 3rem;
+}
+
+.empty-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.empty-text {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .service-header {
+        padding: 100px 0 40px;
+        text-align: center;
+    }
+    
+    .header-content .service-title {
+        font-size: 2.5rem;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .service-subtitle {
+        font-size: 1rem;
+    }
+    
+    .header-stats {
+        margin-top: 30px;
+    }
+    
+    .service-overview-card {
+        padding: 30px 20px;
+        text-align: center;
+    }
+    
+    .overview-actions {
+        margin-top: 20px;
+    }
+    
+    .cta-card {
+        padding: 40px 20px;
+        text-align: center;
+    }
+    
+    .cta-title {
+        font-size: 1.75rem;
+    }
+    
+    .cta-actions {
+        margin-top: 20px;
+    }
+    
+    .cta-actions .btn {
+        display: block;
+        width: 100%;
+        margin: 10px 0 !important;
+    }
+    
+    .empty-icon {
+        width: 100px;
+        height: 100px;
+        font-size: 2.5rem;
+    }
+    
+    .empty-title {
+        font-size: 1.75rem;
+    }
+    
+    .empty-actions .btn {
+        display: block;
+        width: 100%;
+        margin: 10px 0 !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .service-actions {
+        flex-direction: column;
+    }
+    
+    .service-actions .btn {
+        width: 100%;
+    }
+    
+    .meta-item {
+        flex-wrap: wrap;
+    }
+    
+    .service-badges {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+}
+
+/* Loading Animation */
+.service-item-card.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Success/Error Messages */
+.alert-custom {
+    border: none;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: rgba(40, 167, 69, 0.1);
+    color: var(--success-color);
+    border-left: 4px solid var(--success-color);
+}
+
+.alert-danger {
+    background: rgba(220, 53, 69, 0.1);
+    color: var(--danger-color);
+    border-left: 4px solid var(--danger-color);
+}
+
+.alert-info {
+    background: rgba(0, 166, 153, 0.1);
+    color: var(--accent-color);
+    border-left: 4px solid var(--accent-color);
+}
+</style>
+
 <script>
+// Add to cart functionality
 document.querySelectorAll('.toggle-cart-btn').forEach(button => {
     button.addEventListener('click', function() {
         const itemId = this.dataset.itemId;
+        const serviceCard = this.closest('.service-item-card');
+        
+        // Add loading state
+        serviceCard.classList.add('loading');
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
         fetch("{% url 'toggle_cart' %}", {
             method: "POST",
@@ -83,20 +797,46 @@ document.querySelectorAll('.toggle-cart-btn').forEach(button => {
             return response.json();
         })
         .then(data => {
+            serviceCard.classList.remove('loading');
+            
             if (data.status === "added") {
-                alert("Item added to cart!");
+                this.innerHTML = '<i class="fas fa-check"></i>';
+                this.classList.remove('btn-outline-primary');
+                this.classList.add('btn-success');
+                showMessage('Added to cart!', 'success');
+                
+                // Reset button after 2 seconds
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-shopping-cart"></i>';
+                    this.classList.remove('btn-success');
+                    this.classList.add('btn-outline-primary');
+                }, 2000);
             } else if (data.status === "removed") {
-                alert("Item removed from cart!");
+                this.innerHTML = '<i class="fas fa-shopping-cart"></i>';
+                showMessage('Removed from cart!', 'info');
             } else if (data.status === "error") {
-                alert("Error: " + data.message);
+                this.innerHTML = '<i class="fas fa-shopping-cart"></i>';
+                showMessage('Error: ' + data.message, 'error');
             }
+        })
+        .catch(error => {
+            serviceCard.classList.remove('loading');
+            this.innerHTML = '<i class="fas fa-shopping-cart"></i>';
+            showMessage('Error updating cart. Please try again.', 'error');
+            console.error('Error:', error);
         });
     });
 });
 
+// Add to favorites functionality
 document.querySelectorAll('.favorite-btn').forEach(button => {
     button.addEventListener('click', function() {
         const itemId = this.dataset.itemId;
+        const serviceCard = this.closest('.service-item-card');
+        
+        // Add loading state
+        serviceCard.classList.add('loading');
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
         fetch("{% url 'toggle_favorite' %}", {
             method: "POST",
@@ -115,15 +855,125 @@ document.querySelectorAll('.favorite-btn').forEach(button => {
             return response.json();
         })
         .then(data => {
+            serviceCard.classList.remove('loading');
+            
             if (data.status === "added") {
-                alert("Added to favorites!");
+                this.innerHTML = '<i class="fas fa-heart"></i>';
+                this.classList.remove('btn-outline-danger');
+                this.classList.add('btn-danger');
+                showMessage('Added to favorites!', 'success');
+                
+                // Update button state
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-heart"></i>';
+                }, 2000);
             } else if (data.status === "removed") {
-                alert("Removed from favorites!");
+                this.innerHTML = '<i class="far fa-heart"></i>';
+                this.classList.remove('btn-danger');
+                this.classList.add('btn-outline-danger');
+                showMessage('Removed from favorites!', 'info');
             } else if (data.status === "error") {
-                alert("Error: " + data.message);
+                this.innerHTML = '<i class="fas fa-heart"></i>';
+                showMessage('Error: ' + data.message, 'error');
             }
+        })
+        .catch(error => {
+            serviceCard.classList.remove('loading');
+            this.innerHTML = '<i class="fas fa-heart"></i>';
+            showMessage('Error updating favorites. Please try again.', 'error');
+            console.error('Error:', error);
         });
     });
 });
+
+// Book service functionality
+function bookService(serviceName, serviceId) {
+    const phoneNumber = '+918098606019';
+    const message = `Hi! I would like to book the "${serviceName}" service. Service ID: ${serviceId}. Please let me know the availability and next steps.`;
+    
+    // Show options modal
+    if (confirm(`Book "${serviceName}" service?\n\nChoose OK to call directly, or Cancel to send WhatsApp message.`)) {
+        // Call directly
+        window.location.href = `tel:${phoneNumber}`;
+    } else {
+        // Send WhatsApp message
+        const whatsappUrl = `https://wa.me/${phoneNumber.replace('+', '')}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+    }
+}
+
+// Show message functionality
+function showMessage(message, type) {
+    const alertClass = type === 'success' ? 'alert-success' : 
+                     type === 'error' ? 'alert-danger' : 
+                     type === 'warning' ? 'alert-warning' : 'alert-info';
+    
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-custom alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    // Insert at the top of the service items section
+    const serviceSection = document.querySelector('.service-items-section .container');
+    if (serviceSection) {
+        serviceSection.insertAdjacentHTML('afterbegin', alertHtml);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            const alert = serviceSection.querySelector('.alert');
+            if (alert) {
+                alert.classList.remove('show');
+                setTimeout(() => alert.remove(), 150);
+            }
+        }, 3000);
+    }
+}
+
+// Update service count in header
+document.addEventListener('DOMContentLoaded', function() {
+    const serviceCount = document.querySelectorAll('.service-item-card').length;
+    const statNumber = document.querySelector('.stat-number');
+    if (statNumber) {
+        statNumber.textContent = serviceCount;
+    }
+});
+
+// Add smooth scrolling for internal links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+
+// Handle disabled services
+document.querySelectorAll('.service-item-card').forEach(card => {
+    const shutdownBadge = card.querySelector('.shutdown-badge');
+    if (shutdownBadge) {
+        card.style.opacity = '0.7';
+        const buttons = card.querySelectorAll('.service-actions button:not([disabled])');
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            btn.style.cursor = 'not-allowed';
+        });
+    }
+});
+
+// Popular service highlighting
+document.querySelectorAll('.popular-badge').forEach(badge => {
+    const card = badge.closest('.service-item-card');
+    if (card) {
+        card.style.borderTop = '3px solid #ffc107';
+    }
+});
 </script>
-{% endblock scripts %}
+
+{% endblock content %}

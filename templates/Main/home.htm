@@ -1,43 +1,1100 @@
 {% extends 'base.htm' %}
 
 {% block title %}
-Home | FIX-NOW
+Home | FIX-NOW - Expert Home Appliance Services in Coimbatore
 {% endblock title %}
 
 {% block content %}
-{% include "Utils/navbar.htm" %} 
-<div class="container mt-5">
-    <h1 class="display-4 fw-bold text-center mb-4">Our Services</h1>
+{% include "Utils/navbar.htm" %}
 
-    <div class="row">
-        {% for service in services %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                {% if service.image %}
-                <img src="{{ service.image.url }}" class="card-img-top" alt="{{ service.name }}">
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ service.name }}</h5>
-                    <p class="card-text">{{ service.description|default:"No description."|truncatewords:20 }}</p>
-
-                    {% if service.popular %}
-                    <span class="badge bg-success">Popular</span>
-                    {% endif %}
-
-                    {% if service.shutdown %}
-                    <span class="badge bg-danger">Shutdown</span>
-                    {% endif %}
-                    
-                    <div class="mt-3">
-                        <a href="{% url 'service_items' service.id %}" class="btn btn-primary w-100">View Items</a>
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-50">
+            <div class="col-lg-6">
+                <h1 class="hero-title">Expert Home Appliance Mechanics in <span class="text-accent">Coimbatore</span></h1>
+                <p class="hero-subtitle">We repair All Your Appliances in Coimbatore. We specialize in fixing, installing, and maintaining a wide range of motor‑based home appliances, including air conditioners (ACs), washing machines, refrigerators, fans, and water pumps for homes, offices, and industries.</p>
+                <div class="hero-cta">
+                    <a href="#services" class="btn btn-accent btn-lg me-3">
+                        <i class="fas fa-tools me-2"></i>Book Service Now
+                    </a>
+                    <a href="tel:+918098606019" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-phone me-2"></i>Call Now
+                    </a>
+                </div>
+                <div class="hero-features mt-4">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="feature-item">
+                                <i class="fas fa-clock text-accent"></i>
+                                <span>24x7 Support</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="feature-item">
+                                <i class="fas fa-home text-accent"></i>
+                                <span>Doorstep Service</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="feature-item">
+                                <i class="fas fa-percentage text-accent"></i>
+                                <span>15% Discount</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="card-footer text-end text-muted small">
-                    Created: {{ service.created_at|date:"M d, Y" }}
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Home Appliance Repair" class="img-fluid rounded-3 shadow-lg">
                 </div>
             </div>
         </div>
-        {% endfor %}
     </div>
-</div>
+</section>
+
+<section class="mission-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="mission-card">
+                    <h2 class="section-title text-center mb-4">Our Mission</h2>
+                    <p class="mission-text">Our mission is to deliver prompt and professional services to the people of Coimbatore. We take pride in offering affordable, high‑quality repairs, installations, and maintenance for your motor‑based home appliances. No matter the brand or model, we are your trusted mechanics for all appliance‑related needs.</p>
+                    <p class="mission-text">With years of experience, we handle everything from routine servicing to complex repairs, providing reliable solutions to keep your home appliances functioning perfectly during Coimbatore's hot and humid weather.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="services" class="services-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Services Offered</h2>
+            <p class="section-subtitle">Professional repair and maintenance for all your home appliances</p>
+        </div>
+
+        <div class="row g-4 mb-5">
+            {% for service in services %}
+            <div class="col-lg-4 col-md-6">
+                <div class="service-card {% if service.popular %}popular-service{% endif %}">
+                    {% if service.popular %}
+                    <div class="popular-badge">
+                        <i class="fas fa-star"></i> Popular
+                    </div>
+                    {% endif %}
+                    
+                    {% if service.shutdown %}
+                    <div class="shutdown-overlay">
+                        <div class="shutdown-badge">
+                            <i class="fas fa-times-circle"></i> Temporarily Unavailable
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="service-image">
+                        {% if service.image %}
+                        <img src="{{ service.image.url }}" alt="{{ service.name }}" class="img-fluid">
+                        {% else %}
+                        <div class="placeholder-image">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="service-content">
+                        <h3 class="service-title">{{ service.name }}</h3>
+                        <p class="service-description">{{ service.description|default:"Professional repair and maintenance service for your appliances."|truncatewords:15 }}</p>
+                        
+                        <div class="service-footer">
+                            <div class="service-meta">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar-alt me-1"></i>
+                                    Added {{ service.created_at|date:"M d, Y" }}
+                                </small>
+                            </div>
+                            <a href="{% url 'service_items' service.id %}" class="btn btn-accent {% if service.shutdown %}disabled{% endif %}">
+                                <i class="fas fa-arrow-right me-2"></i>View Services
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+
+            <div class="col-lg-6 col-md-6">
+                <div class="service-card">
+                    <div class="service-image">
+                        <div class="placeholder-image">
+                            <i class="fas fa-screwdriver-wrench"></i>
+                        </div>
+                    </div>
+                    <div class="service-content">
+                        <h3 class="service-title">Repairing & Servicing</h3>
+                        <p class="service-description">Our skilled technicians can diagnose and repair any HVAC‑related issues swiftly, restoring comfort to your space. Regular maintenance is essential to ensure optimal performance.</p>
+                        <div class="service-footer">
+                            <a href="#contact" class="btn btn-accent">
+                                <i class="fas fa-arrow-right me-2"></i>Book Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <div class="service-card">
+                    <div class="service-image">
+                        <div class="placeholder-image">
+                            <i class="fas fa-spray-can"></i>
+                        </div>
+                    </div>
+                    <div class="service-content">
+                        <h3 class="service-title">Air Conditioning Cleaning</h3>
+                        <p class="service-description">Breathe easier with our indoor air quality assessments and solutions, ensuring your space is free from pollutants and allergens.</p>
+                        <div class="service-footer">
+                            <a href="#contact" class="btn btn-accent">
+                                <i class="fas fa-arrow-right me-2"></i>Book Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <div class="service-card">
+                    <div class="service-image">
+                        <div class="placeholder-image">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                    </div>
+                    <div class="service-content">
+                        <h3 class="service-title">Installation Service</h3>
+                        <p class="service-description">We specialize in installing state‑of‑the‑art HVAC systems that guarantee optimal performance and energy efficiency.</p>
+                        <div class="service-footer">
+                            <a href="#contact" class="btn btn-accent">
+                                <i class="fas fa-arrow-right me-2"></i>Book Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <div class="service-card">
+                    <div class="service-image">
+                        <div class="placeholder-image">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                    </div>
+                    <div class="service-content">
+                        <h3 class="service-title">Maintenance Service</h3>
+                        <p class="service-description">Regular maintenance is essential to ensure your HVAC system operates efficiently and lasts longer. Our maintenance plans are tailored to keep your equipment running smoothly.</p>
+                        <div class="service-footer">
+                            <a href="#contact" class="btn btn-accent">
+                                <i class="fas fa-arrow-right me-2"></i>Book Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+
+        <div class="services-list-section">
+            <h3 class="text-center mb-4">Complete Services List</h3>
+            <div class="row g-3">
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="service-item">
+                        <i class="fas fa-snowflake text-accent"></i>
+                        <span>AC Installations</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="service-item">
+                        <i class="fas fa-tools text-accent"></i>
+                        <span>AC Repairs</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="service-item">
+                        <i class="fas fa-cube text-accent"></i>
+                        <span>Refrigerator Services</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="service-item">
+                        <i class="fas fa-fire text-accent"></i>
+                        <span>Water Heater Services</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="service-item">
+                        <i class="fas fa-tint text-accent"></i>
+                        <span>RO Services</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="service-item">
+                        <i class="fas fa-tshirt text-accent"></i>
+                        <span>Washing Machine Services</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="service-item">
+                        <i class="fas fa-bolt text-accent"></i>
+                        <span>Electrical Services</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="service-item">
+                        <i class="fas fa-home text-accent"></i>
+                        <span>Door Step AC Services</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="why-choose-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Why Choose FixNow Home Care?</h2>
+            <p class="section-subtitle">We're Coimbatore's most trusted home appliance service provider</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h4>Quick Maintenance</h4>
+                    <p>Same-day service available. Quick maintenance and repair solutions.</p>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h4>Free Consultant</h4>
+                    <p>Get free consultation from our expert technicians before any service.</p>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>No Checking Charge</h4>
+                    <p>Transparent pricing with no checking charges. Honest and upfront pricing.</p>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-smile"></i>
+                    </div>
+                    <h4>Friendly Service</h4>
+                    <p>Our team provides courteous and professional service with a smile.</p>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h4>24×7 Customer Support</h4>
+                    <p>Round-the-clock customer support for all your service needs.</p>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <h4>Discounts Available</h4>
+                    <p>Special offers and discounts on maintenance packages and services.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="discount-section">
+    <div class="container">
+        <div class="discount-banner">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h3 class="discount-title">
+                        <i class="fas fa-tools me-3"></i>
+                        Special Discount Available!
+                    </h3>
+                    <p class="discount-text">Keep your home appliances running smoothly and your budget in check! ⚙️ Avail our maintenance + cleaning package for ACs, washing machines, and refrigerators, and get <strong>15% OFF</strong>. Stay worry‑free with our professional services in Coimbatore.</p>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <a href="tel:+918098606019" class="btn btn-accent btn-lg">
+                        <i class="fas fa-phone me-2"></i>Book Now & Save 15%
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="testimonials-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Our Happy Customers</h2>
+            <p class="section-subtitle">Read what our satisfied customers say about our services</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"One the best AC service in Coimbatore! The team was quick, helpful, and efficient. I'm really happy with their work and would call them again for sure!"</p>
+                    <div class="testimonial-author">
+                        <strong>Dinesh</strong>
+                        <span>R.S Puram</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"Fast and reliable service. My AC was repaired without any issues, and it works perfectly now. Thank you for the efficient and smooth experience!"</p>
+                    <div class="testimonial-author">
+                        <strong>Rajesh Kumar</strong>
+                        <span>Saravanampatti</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"The team was friendly and professional. They did a great job fixing my AC, and now it's cooling perfectly. I'm very satisfied with the service! Best AC service in Coimbatore!"</p>
+                    <div class="testimonial-author">
+                        <strong>Karthikeyan</strong>
+                        <span>Singanallur</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"Great service! My AC was fixed quickly, and the staff was very friendly and professional. I'm really happy with their work and would definitely use their service again!"</p>
+                    <div class="testimonial-author">
+                        <strong>Arun Karthick</strong>
+                        <span>Gandhipuram</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"They did a good job installing my AC. The whole process was quick and easy. The team was helpful and explained everything clearly. I highly recommend them!"</p>
+                    <div class="testimonial-author">
+                        <strong>Ajay Krishna</strong>
+                        <span>Coimbatore</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="faq-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">FAQs – We've got answers</h2>
+            <p class="section-subtitle">Frequently asked questions about our services</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faq1">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
+                                Are we the best home appliance service in Coimbatore?
+                            </button>
+                        </h2>
+                        <div id="collapse1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes! FixNow Home Care is a trusted home appliance service in Coimbatore, offering expert AC, refrigerator, washing machine, and microwave repairs. Our skilled technicians provide quick and reliable service at affordable rates.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faq2">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
+                                Why choose FixNow Home Care for AC service in Coimbatore?
+                            </button>
+                        </h2>
+                        <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                We offer fast, affordable, and professional AC repair and maintenance in Coimbatore. Our team ensures thorough cleaning, gas refilling, and performance checks to keep your AC running efficiently.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faq3">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">
+                                Do we provide doorstep home appliance repair in Coimbatore?
+                            </button>
+                        </h2>
+                        <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes! FixNow Home Care offers same‑day home appliance repairs at your doorstep in Coimbatore. Our technicians bring all necessary tools and parts for quick and hassle‑free service.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faq4">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4">
+                                What types of home appliances do we repair in Coimbatore?
+                            </button>
+                        </h2>
+                        <div id="collapse4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                We specialize in repairing ACs, refrigerators, washing machines, geysers, microwaves, and other home appliances. Our experts handle all major brands and models with professional care.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faq5">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5">
+                                How can I book a home appliance service in Coimbatore?
+                            </button>
+                        </h2>
+                        <div id="collapse5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                You can call us, WhatsApp, or book online through our website for quick service. We offer flexible scheduling, affordable pricing, and expert solutions for all home appliance issues in Coimbatore.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section id="contact" class="contact-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="section-title text-white">Need Immediate Service?</h2>
+                <p class="text-white-75 mb-4">Get your appliances fixed by our expert technicians. Call now for same-day service in Coimbatore. Our expert team offers quick, professional installation, repairs, and maintenance for ACs, washing machines, refrigerators, and more to keep your home running smoothly.</p>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-phone text-accent"></i>
+                        <span>+91 8098606019</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt text-accent"></i>
+                        <span>22b Ramasamy Konar Street, Masakalipalayam, Coimbatore, Tamilnadu‑641015</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock text-accent"></i>
+                        <span>24×7 Customer services</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="contact-cta">
+                    <a href="tel:+918098606019" class="btn btn-accent btn-lg me-3">
+                        <i class="fas fa-phone me-2"></i>Call Now
+                    </a>
+                    <a href="https://wa.me/918098606019" class="btn btn-success btn-lg" target="_blank">
+                        <i class="fab fa-whatsapp me-2"></i>WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.text-accent {
+    color: var(--accent-color) !important;
+}
+
+.text-white-75 {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.btn-accent {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+    font-weight: 500;
+    padding: 12px 24px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-accent:hover {
+    background-color: var(--hover-color);
+    border-color: var(--hover-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 166, 153, 0.3);
+}
+
+.btn-outline-primary {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    font-weight: 500;
+    padding: 12px 24px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.hero-section {
+    background: linear-gradient(135deg, var(--white) 0%, var(--light-gray) 100%);
+    padding: 80px 0;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.hero-cta {
+    margin-bottom: 3rem;
+}
+
+.hero-features .feature-item {
+    text-align: center;
+    padding: 1rem 0;
+}
+
+.hero-features .feature-item i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.hero-features .feature-item span {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+.hero-image img {
+    border-radius: 20px;
+    max-width: 100%;
+    height: auto;
+}
+
+.mission-section {
+    padding: 80px 0;
+    background-color: var(--white);
+}
+
+.mission-card {
+    background: linear-gradient(135deg, var(--light-gray), var(--white));
+    padding: 60px 40px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.mission-text {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+}
+
+.services-section {
+    padding: 80px 0;
+    background-color: var(--background-color);
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.service-card {
+    background: var(--white);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+    position: relative;
+}
+
+.service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+.service-card.popular-service {
+    border: 2px solid var(--accent-color);
+}
+
+.popular-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: var(--accent-color);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 2;
+}
+
+.shutdown-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    border-radius: 16px;
+}
+
+.shutdown-badge {
+    background: #dc3545;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.service-image {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+}
+
+.service-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.service-card:hover .service-image img {
+    transform: scale(1.05);
+}
+
+.placeholder-image {
+    height: 100%;
+    background: linear-gradient(135deg, var(--accent-color), var(--hover-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+}
+
+.service-content {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 200px);
+}
+
+.service-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 12px;
+}
+
+.service-description {
+    color: var(--text-color);
+    margin-bottom: auto;
+    line-height: 1.5;
+}
+
+.service-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.service-meta {
+    flex: 1;
+}
+
+.services-list-section {
+    margin-top: 60px;
+    padding-top: 60px;
+    border-top: 2px solid var(--border-color);
+}
+
+.service-item {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.service-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.service-item i {
+    font-size: 2rem;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.service-item span {
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+.why-choose-section {
+    padding: 80px 0;
+    background-color: var(--white);
+}
+
+.feature-card {
+    background: var(--white);
+    padding: 30px 20px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+    border: 1px solid var(--border-color);
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    border-color: var(--accent-color);
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--accent-color), var(--hover-color));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.feature-card h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 12px;
+}
+
+.feature-card p {
+    color: var(--text-color);
+    line-height: 1.6;
+    font-size: 0.9rem;
+}
+
+.discount-section {
+    padding: 60px 0;
+    background: linear-gradient(135deg, var(--accent-color), var(--hover-color));
+}
+
+.discount-banner {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 40px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.discount-title {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.discount-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.testimonials-section {
+    padding: 80px 0;
+    background-color: var(--background-color);
+}
+
+.testimonial-card {
+    background: var(--white);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+    text-align: center;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.testimonial-rating {
+    margin-bottom: 20px;
+}
+
+.testimonial-rating i {
+    color: #ffc107;
+    font-size: 1rem;
+    margin-right: 2px;
+}
+
+.testimonial-text {
+    font-style: italic;
+    color: var(--text-color);
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.testimonial-author strong {
+    color: var(--primary-color);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.testimonial-author span {
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+.faq-section {
+    padding: 80px 0;
+    background-color: var(--white);
+}
+
+.accordion-item {
+    border: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.accordion-button {
+    background-color: var(--white);
+    color: var(--primary-color);
+    font-weight: 600;
+    padding: 20px 24px;
+    border: none;
+    font-size: 1.1rem;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: var(--accent-color);
+    color: white;
+    box-shadow: none;
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+    border: none;
+}
+
+.accordion-body {
+    padding: 20px 24px;
+    color: var(--text-color);
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+.contact-section {
+    padding: 80px 0;
+    background: linear-gradient(135deg, var(--primary-color), #1a1a1a);
+    color: white;
+}
+
+.contact-info {
+    margin-bottom: 2rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.contact-item i {
+    width: 24px;
+    margin-right: 12px;
+    font-size: 1.2rem;
+}
+
+.contact-cta {
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .hero-section {
+        padding: 60px 0;
+        text-align: center;
+    }
+    
+    .hero-cta .btn {
+        display: block;
+        margin-bottom: 1rem;
+        width: 100%;
+    }
+    
+    .contact-cta .btn {
+        display: block;
+        margin-bottom: 1rem;
+        width: 100%;
+    }
+    
+    .mission-card {
+        padding: 40px 20px;
+    }
+    
+    .discount-banner {
+        padding: 30px 20px;
+        text-align: center;
+    }
+    
+    .discount-title {
+        font-size: 1.5rem;
+    }
+    
+    .why-choose-section .col-lg-2 {
+        margin-bottom: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-features .row {
+        text-align: center;
+    }
+    
+    .service-card {
+        margin-bottom: 2rem;
+    }
+    
+    .testimonial-card {
+        margin-bottom: 2rem;
+    }
+    
+    .feature-card {
+        margin-bottom: 2rem;
+    }
+}
+</style>
+
+
 {% endblock content %}

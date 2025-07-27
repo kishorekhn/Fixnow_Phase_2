@@ -1,68 +1,880 @@
 {% extends 'base.htm' %}
 
-{% block title %}My Favorites | FIX-NOW{% endblock title %}
+{% block title %}My Favorites | FIX-NOW - Home Appliance Services{% endblock title %}
 
 {% block content %}
-{% include "Utils/navbar.htm" %} 
+{% include "Utils/navbar.htm" %}
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4">My Favorite Items</h2>
-
-    <div class="row">
-        {% for item in favorite_items %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                {% if item.service_item.main_image %}
-                <img src="{{ item.service_item.main_image.url }}" class="card-img-top" alt="{{ item.service_item.name }}">
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ item.service_item.name }}</h5>
-                    <p class="card-text">{{ item.service_item.description|default:"No description."|truncatewords:20 }}</p>
-                    <p class="fw-bold">Price: ₹{{ item.service_item.price }}</p>
-                    <p class="small text-muted">Added on: {{ item.added_at|date:"M d, Y H:i" }}</p>
-
-                    <button class="btn btn-danger w-100 remove-fav-btn mt-2" data-item-id="{{ item.service_item.id }}">
-                        🗑️ Remove from Favorites
-                    </button>
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="header-content">
+                    <h1 class="page-title">
+                        <i class="fas fa-heart me-3"></i>
+                        My Favorites
+                    </h1>
+                    <p class="page-subtitle">Your saved home appliance services for quick access</p>
+                </div>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">{{ favorite_items|length }}</span>
+                        <span class="stat-label">Saved Services</span>
+                    </div>
                 </div>
             </div>
         </div>
-        {% empty %}
-        <p class="text-center">You have no favorites yet.</p>
-        {% endfor %}
     </div>
-</div>
-{% endblock content %}
+</section>
 
-{% block scripts %}
+<!-- Favorites Content -->
+<section class="favorites-section">
+    <div class="container">
+        {% if favorite_items %}
+        <!-- Favorites Summary Card -->
+        <div class="favorites-summary-card mb-5">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h3 class="summary-title">
+                        <i class="fas fa-star me-2"></i>
+                        Your Saved Services
+                    </h3>
+                    <p class="summary-text">Quick access to your favorite home appliance services</p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <div class="summary-actions">
+                        <button class="btn btn-accent btn-lg" onclick="addAllToCart()">
+                            <i class="fas fa-shopping-cart me-2"></i>Add All to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Favorites Grid -->
+        <div class="row g-4">
+            {% for item in favorite_items %}
+            <div class="col-xl-4 col-lg-6 col-md-6">
+                <div class="favorite-card" data-item-id="{{ item.service_item.id }}">
+                    <!-- Favorite Badge -->
+                    <div class="favorite-badge">
+                        <i class="fas fa-heart"></i>
+                        <span>Favorite</span>
+                    </div>
+
+                    <!-- Service Image -->
+                    <div class="favorite-image">
+                        {% if item.service_item.main_image %}
+                        <img src="{{ item.service_item.main_image.url }}" alt="{{ item.service_item.name }}" class="img-fluid">
+                        {% else %}
+                        <div class="placeholder-image">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        {% endif %}
+                        <div class="image-overlay">
+                            <div class="overlay-content">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Details -->
+                    <div class="favorite-content">
+                        <div class="favorite-header">
+                            <h4 class="service-name">{{ item.service_item.name }}</h4>
+                            <div class="service-category">
+                                <i class="fas fa-tag me-1"></i>
+                                <span>Home Appliance</span>
+                            </div>
+                        </div>
+
+                        <p class="service-description">
+                            {{ item.service_item.description|default:"Professional home appliance service with expert technicians and quality guarantee."|truncatewords:15 }}
+                        </p>
+
+                        <!-- Favorite Meta Info -->
+                        <div class="favorite-meta">
+                            <div class="meta-row">
+                                <div class="meta-item">
+                                    <i class="fas fa-rupee-sign text-accent"></i>
+                                    <span class="meta-label">Price:</span>
+                                    <span class="meta-value price-value">₹{{ item.service_item.price }}</span>
+                                </div>
+                            </div>
+                            <div class="meta-row">
+                                <div class="meta-item">
+                                    <i class="fas fa-heart-plus text-accent"></i>
+                                    <span class="meta-label">Saved:</span>
+                                    <span class="meta-value">{{ item.added_at|date:"M d, Y" }}</span>
+                                </div>
+                            </div>
+                            <div class="meta-row">
+                                <div class="meta-item">
+                                    <i class="fas fa-clock text-accent"></i>
+                                    <span class="meta-label">Time:</span>
+                                    <span class="meta-value">{{ item.added_at|date:"H:i" }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="favorite-actions">
+                            <button class="btn btn-accent flex-fill me-2" onclick="bookService('{{ item.service_item.name }}', '{{ item.service_item.id }}')">
+                                <i class="fas fa-phone me-2"></i>Book Now
+                            </button>
+                            <button class="btn btn-outline-primary me-2" onclick="addToCart('{{ item.service_item.id }}')" title="Add to cart">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                            <button class="btn btn-outline-danger remove-fav-btn" data-item-id="{{ item.service_item.id }}" title="Remove from favorites">
+                                <i class="fas fa-heart-broken"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section mt-5">
+            <div class="cta-card">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h3 class="cta-title">Ready to Book Your Favorite Services?</h3>
+                        <p class="cta-text">Turn your saved services into bookings! Our expert technicians are ready to help you with professional home appliance services. Get same-day service with our 24x7 support.</p>
+                    </div>
+                    <div class="col-lg-4 text-lg-end">
+                        <div class="cta-actions">
+                            <a href="tel:+918098606019" class="btn btn-accent btn-lg">
+                                <i class="fas fa-phone me-2"></i>Call Now
+                            </a>
+                            <a href="https://wa.me/918098606019" class="btn btn-success btn-lg ms-2" target="_blank">
+                                <i class="fab fa-whatsapp me-2"></i>WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-content">
+                <div class="empty-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3 class="empty-title">No Favorites Yet</h3>
+                <p class="empty-text">You haven't saved any services to your favorites yet. Browse our expert home appliance services and save the ones you're interested in for quick access later.</p>
+                <div class="empty-actions">
+                    <a href="{% url 'home' %}#services" class="btn btn-accent btn-lg">
+                        <i class="fas fa-search me-2"></i>Browse Services
+                    </a>
+                    <a href="tel:+918098606019" class="btn btn-outline-primary btn-lg ms-3">
+                        <i class="fas fa-phone me-2"></i>Call for Help
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<style>
+/* Import matching styles */
+:root {
+    --primary-color: #2C2C2C;
+    --accent-color: #00A699;
+    --text-color: #6F6F6F;
+    --background-color: #F7F7F7;
+    --white: #FFFFFF;
+    --hover-color: #008C84;
+    --light-gray: #F8F9FA;
+    --border-color: #E9ECEF;
+    --danger-color: #dc3545;
+    --success-color: #28a745;
+    --favorite-color: #e91e63;
+}
+
+body {
+    background-color: var(--background-color);
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Page Header */
+.page-header {
+    background: linear-gradient(135deg, var(--white) 0%, var(--light-gray) 100%);
+    padding: 120px 0 60px;
+    margin-top: -20px;
+}
+
+.header-content .page-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.page-title i {
+    color: var(--favorite-color);
+}
+
+.page-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    margin-bottom: 0;
+}
+
+.header-stats {
+    text-align: center;
+    background: var(--white);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.stat-number {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--favorite-color);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 1rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+/* Favorites Section */
+.favorites-section {
+    padding: 60px 0 80px;
+}
+
+/* Favorites Summary Card */
+.favorites-summary-card {
+    background: var(--white);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid var(--favorite-color);
+}
+
+.summary-title {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.summary-text {
+    color: var(--text-color);
+    margin-bottom: 0;
+    font-size: 1rem;
+}
+
+/* Favorite Cards */
+.favorite-card {
+    background: var(--white);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    height: 100%;
+}
+
+.favorite-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+.favorite-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(233, 30, 99, 0.9);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.favorite-image {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+}
+
+.favorite-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.favorite-card:hover .favorite-image img {
+    transform: scale(1.05);
+}
+
+.placeholder-image {
+    height: 100%;
+    background: linear-gradient(135deg, var(--accent-color), var(--hover-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.favorite-card:hover .image-overlay {
+    opacity: 1;
+}
+
+.overlay-content i {
+    color: white;
+    font-size: 2rem;
+}
+
+/* Favorite Content */
+.favorite-content {
+    padding: 24px;
+}
+
+.favorite-header {
+    margin-bottom: 16px;
+}
+
+.service-name {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.service-category {
+    color: var(--text-color);
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+}
+
+.service-description {
+    color: var(--text-color);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+/* Favorite Meta */
+.favorite-meta {
+    background: var(--light-gray);
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.meta-row {
+    margin-bottom: 8px;
+}
+
+.meta-row:last-child {
+    margin-bottom: 0;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.meta-label {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.meta-value {
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.price-value {
+    color: var(--accent-color);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+/* Action Buttons */
+.favorite-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-accent {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+    font-weight: 500;
+    padding: 10px 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.btn-accent:hover {
+    background-color: var(--hover-color);
+    border-color: var(--hover-color);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0, 166, 153, 0.3);
+}
+
+.btn-outline-primary {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background: transparent;
+    padding: 10px 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-outline-danger {
+    border-color: var(--favorite-color);
+    color: var(--favorite-color);
+    background: transparent;
+    padding: 10px 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-danger:hover {
+    background-color: var(--favorite-color);
+    border-color: var(--favorite-color);
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* CTA Section */
+.cta-section {
+    margin-top: 60px;
+}
+
+.cta-card {
+    background: linear-gradient(135deg, var(--primary-color), #1a1a1a);
+    color: white;
+    padding: 50px 40px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+.cta-title {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.cta-text {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.1rem;
+    margin-bottom: 0;
+    line-height: 1.6;
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #218838;
+    transform: translateY(-1px);
+}
+
+/* Empty State */
+.empty-state {
+    padding: 80px 0;
+    text-align: center;
+}
+
+.empty-content {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.empty-icon {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, var(--favorite-color), #c2185b);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 30px;
+    color: white;
+    font-size: 3rem;
+}
+
+.empty-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.empty-text {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .page-header {
+        padding: 100px 0 40px;
+        text-align: center;
+    }
+    
+    .header-content .page-title {
+        font-size: 2.5rem;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .page-subtitle {
+        font-size: 1rem;
+    }
+    
+    .header-stats {
+        margin-top: 30px;
+    }
+    
+    .favorites-summary-card {
+        padding: 30px 20px;
+        text-align: center;
+    }
+    
+    .summary-actions {
+        margin-top: 20px;
+    }
+    
+    .cta-card {
+        padding: 40px 20px;
+        text-align: center;
+    }
+    
+    .cta-title {
+        font-size: 1.75rem;
+    }
+    
+    .cta-actions {
+        margin-top: 20px;
+    }
+    
+    .cta-actions .btn {
+        display: block;
+        width: 100%;
+        margin: 10px 0 !important;
+    }
+    
+    .empty-icon {
+        width: 100px;
+        height: 100px;
+        font-size: 2.5rem;
+    }
+    
+    .empty-title {
+        font-size: 1.75rem;
+    }
+    
+    .empty-actions .btn {
+        display: block;
+        width: 100%;
+        margin: 10px 0 !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .favorite-actions {
+        flex-direction: column;
+    }
+    
+    .favorite-actions .btn {
+        width: 100%;
+    }
+    
+    .meta-item {
+        flex-wrap: wrap;
+    }
+}
+
+/* Loading Animation */
+.favorite-card.removing {
+    opacity: 0.5;
+    transform: scale(0.95);
+    pointer-events: none;
+}
+
+/* Success/Error Messages */
+.alert-custom {
+    border: none;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: rgba(40, 167, 69, 0.1);
+    color: var(--success-color);
+    border-left: 4px solid var(--success-color);
+}
+
+.alert-danger {
+    background: rgba(220, 53, 69, 0.1);
+    color: var(--danger-color);
+    border-left: 4px solid var(--danger-color);
+}
+</style>
+
 <script>
+// Remove from favorites functionality
 document.querySelectorAll('.remove-fav-btn').forEach(button => {
     button.addEventListener('click', function() {
         const itemId = this.dataset.itemId;
+        const favoriteCard = this.closest('.favorite-card');
+        
+        // Add removing animation
+        favoriteCard.classList.add('removing');
+        
+        // Show confirmation
+        if (confirm('Are you sure you want to remove this service from your favorites?')) {
+            fetch("{% url 'toggle_favorite' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({ item_id: itemId }),
+                redirect: "follow"
+            })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                    return;
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === "removed") {
+                    // Show success message
+                    showMessage('Removed from favorites!', 'success');
+                    
+                    // Animate card removal
+                    favoriteCard.style.transition = 'all 0.5s ease';
+                    favoriteCard.style.transform = 'translateX(-100%)';
+                    favoriteCard.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        location.reload();
+                    }, 500);
+                } else {
+                    favoriteCard.classList.remove('removing');
+                    showMessage('Error removing item. Please try again.', 'error');
+                }
+            })
+            .catch(error => {
+                favoriteCard.classList.remove('removing');
+                showMessage('Error removing item. Please try again.', 'error');
+                console.error('Error:', error);
+            });
+        } else {
+            favoriteCard.classList.remove('removing');
+        }
+    });
+});
 
-        fetch("{% url 'toggle_favorite' %}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": "{{ csrf_token }}"
-            },
-            body: JSON.stringify({ item_id: itemId }),
-            redirect: "follow"
-        })
-        .then(response => {
-            if (response.redirected) {
-                window.location.href = response.url;
-                return;
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.status === "removed") {
-                alert("Removed from favorites!");
-                location.reload(); 
-            }
+// Book service functionality
+function bookService(serviceName, serviceId) {
+    const phoneNumber = '+918098606019';
+    const message = `Hi! I would like to book the "${serviceName}" service from my favorites. Service ID: ${serviceId}. Please let me know the availability and next steps.`;
+    
+    // Show options modal
+    if (confirm(`Book "${serviceName}" service?\n\nChoose OK to call directly, or Cancel to send WhatsApp message.`)) {
+        // Call directly
+        window.location.href = `tel:${phoneNumber}`;
+    } else {
+        // Send WhatsApp message
+        const whatsappUrl = `https://wa.me/${phoneNumber.replace('+', '')}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+    }
+}
+
+// Add to cart functionality
+function addToCart(serviceId) {
+    fetch("{% url 'toggle_cart' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({ item_id: serviceId }),
+        redirect: "follow"
+    })
+    .then(response => {
+        if (response.redirected) {
+            window.location.href = response.url;
+            return;
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === "added") {
+            showMessage('Added to cart!', 'success');
+        } else if (data.status === "removed") {
+            showMessage('Removed from cart!', 'info');
+        }
+    })
+    .catch(error => {
+        showMessage('Error updating cart. Please try again.', 'error');
+        console.error('Error:', error);
+    });
+}
+
+// Add all to cart functionality
+function addAllToCart() {
+    const favoriteCards = document.querySelectorAll('.favorite-card');
+    if (favoriteCards.length === 0) return;
+    
+    if (confirm(`Add all ${favoriteCards.length} favorite services to cart?`)) {
+        const serviceIds = Array.from(favoriteCards).map(card => card.dataset.itemId);
+        let completed = 0;
+        let errors = 0;
+        
+        serviceIds.forEach(serviceId => {
+            fetch("{% url 'toggle_cart' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({ item_id: serviceId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                completed++;
+                if (data.status !== "added") errors++;
+                
+                if (completed === serviceIds.length) {
+                    if (errors === 0) {
+                        showMessage('All favorites added to cart!', 'success');
+                    } else {
+                        showMessage(`${serviceIds.length - errors} services added to cart, ${errors} failed.`, 'warning');
+                    }
+                }
+            })
+            .catch(error => {
+                completed++;
+                errors++;
+                console.error('Error:', error);
+                
+                if (completed === serviceIds.length) {
+                    showMessage(`${serviceIds.length - errors} services added to cart, ${errors} failed.`, 'warning');
+                }
+            });
         });
+    }
+}
+
+// Show message functionality
+function showMessage(message, type) {
+    const alertClass = type === 'success' ? 'alert-success' : 
+                     type === 'error' ? 'alert-danger' : 
+                     type === 'warning' ? 'alert-warning' : 'alert-info';
+    
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-custom alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    // Insert at the top of the favorites section
+    const favoritesSection = document.querySelector('.favorites-section .container');
+    if (favoritesSection) {
+        favoritesSection.insertAdjacentHTML('afterbegin', alertHtml);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            const alert = favoritesSection.querySelector('.alert');
+            if (alert) {
+                alert.classList.remove('show');
+                setTimeout(() => alert.remove(), 150);
+            }
+        }, 3000);
+    }
+}
+
+// Update favorites count in header
+document.addEventListener('DOMContentLoaded', function() {
+    const favoriteCount = document.querySelectorAll('.favorite-card').length;
+    const statNumber = document.querySelector('.stat-number');
+    if (statNumber) {
+        statNumber.textContent = favoriteCount;
+    }
+});
+
+// Add smooth scrolling for internal links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
     });
 });
 </script>
-{% endblock scripts %}
+
+{% endblock content %}
