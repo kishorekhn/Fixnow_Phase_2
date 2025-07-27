@@ -147,3 +147,6 @@ def toggle_favorite(request):
             return JsonResponse({'status': 'error', 'message': 'Item not found'}, status=404)
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+def contact_view(request):
+    return render(request, 'Main/contact.htm')
