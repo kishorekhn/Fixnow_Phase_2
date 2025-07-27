@@ -57,6 +57,11 @@ def home(request):
     services = Service.objects.all() 
     return render(request, "Main/home.htm", {"services": services})
 
+def services(request):
+    services = Service.objects.prefetch_related('items').all()
+    return render(request, 'Main/items.htm', {'services': services})
+
+
 def service_items(request, service_id):
     service = get_object_or_404(Service, id=service_id)
     items = ServiceItem.objects.filter(service_id=service_id)
