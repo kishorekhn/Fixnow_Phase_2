@@ -282,20 +282,32 @@
 </section>
 
 <!-- Contact Form Section -->
-<section class="contact-form-section">
+<section class="contact-form-section py-5">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 mx-auto">
-                <div class="contact-form-card">
-                    <div class="form-header text-center">
+                <div class="contact-form-card p-4 shadow rounded-3 bg-white">
+                    <div class="form-header text-center mb-4">
                         <h3 class="form-title">Send Us a Message</h3>
                         <p class="form-subtitle">Have a question or need to schedule a service? Drop us a message and we'll get back to you shortly.</p>
                     </div>
-                    
-                    <form class="contact-form" id="contactForm">
+
+                    <!-- Show success or error message -->
+                    {% if success %}
+                        <div class="alert alert-success text-center">
+                            ✅ Your message was sent successfully!
+                        </div>
+                    {% elif error %}
+                        <div class="alert alert-danger text-center">
+                            ❌ Failed to send your message. Please try again later.
+                        </div>
+                    {% endif %}
+
+                    <form class="contact-form" method="post">
+                        {% csrf_token %}
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="form-group mb-3">
                                     <label for="firstName" class="form-label">
                                         <i class="fas fa-user me-2"></i>First Name
                                     </label>
@@ -303,7 +315,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="form-group mb-3">
                                     <label for="lastName" class="form-label">
                                         <i class="fas fa-user me-2"></i>Last Name
                                     </label>
@@ -311,10 +323,10 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="form-group mb-3">
                                     <label for="email" class="form-label">
                                         <i class="fas fa-envelope me-2"></i>Email Address
                                     </label>
@@ -322,7 +334,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="form-group mb-3">
                                     <label for="phone" class="form-label">
                                         <i class="fas fa-phone me-2"></i>Phone Number
                                     </label>
@@ -330,8 +342,8 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="form-group">
+
+                        <div class="form-group mb-3">
                             <label for="service" class="form-label">
                                 <i class="fas fa-tools me-2"></i>Service Needed
                             </label>
@@ -346,29 +358,27 @@
                                 <option value="other">Other (Please specify in message)</option>
                             </select>
                         </div>
-                        
-                        <div class="form-group">
+
+                        <div class="form-group mb-3">
                             <label for="message" class="form-label">
                                 <i class="fas fa-comment me-2"></i>Message
                             </label>
                             <textarea class="form-control" id="message" name="message" rows="5" placeholder="Please describe your issue or service requirements..." required></textarea>
                         </div>
-                        
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="urgentService">
-                                <label class="form-check-label" for="urgentService">
-                                    <i class="fas fa-exclamation-circle text-warning me-1"></i>
-                                    This is an urgent service request
-                                </label>
-                            </div>
+
+                        <div class="form-group mb-3 form-check">
+                            <input class="form-check-input" type="checkbox" id="urgentService" name="urgentService">
+                            <label class="form-check-label" for="urgentService">
+                                <i class="fas fa-exclamation-circle text-warning me-1"></i>
+                                This is an urgent service request
+                            </label>
                         </div>
-                        
+
                         <div class="form-actions text-center">
                             <button type="submit" class="btn btn-accent btn-lg">
                                 <i class="fas fa-paper-plane me-2"></i>Send Message
                             </button>
-                            <p class="form-note">We'll respond within 2-4 hours during business hours</p>
+                            <p class="form-note mt-2 text-muted small">We'll respond within 2-4 hours during business hours</p>
                         </div>
                     </form>
                 </div>

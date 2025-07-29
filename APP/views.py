@@ -7,7 +7,9 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 import json
-
+from django.conf import settings
+import smtplib
+from email.message import EmailMessage
 
 def login_view(request):
     if request.method == 'POST':
@@ -154,4 +156,45 @@ def toggle_favorite(request):
     return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
 
 def contact_view(request):
+    if request.method == 'POST':
+        first_name = request.POST.get('firstName')
+        last_name = request.POST.get('lastName')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        service = request.POST.get('service')
+        message = request.POST.get('message')
+        urgent = 'Yes' if request.POST.get('urgentService') == 'on' else 'No'
+
+        subject = f"New Contact Form Submission - {service.title()}"
+        body = f"""
+You have received a new message from your website contact form.
+
+Name: {first_name} {last_name}
+Email: {email}
+Phone: {phone}
+Service Needed: {service}
+Urgent Request: {urgent}
+
+Message:
+{message}
+"""
+
+        try:
+            msg = EmailMessage()
+            msg['Subject'] = subject
+            msg['From'] = settings.EMAIL_HOST_USER
+            msg['To'] = settings.EMAIL_HOST_USER
+            msg.set_content(body)
+
+            with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+                smtp.starttls()
+                smtp.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+                smtp.send_message(msg)
+
+            return render(request, 'Main/contact.htm', {'success': True})
+
+        except Exception as e:
+            print(f"Email sending failed: {e}")
+            return render(request, 'Main/contact.htm', {'error': True})
+
     return render(request, 'Main/contact.htm')
