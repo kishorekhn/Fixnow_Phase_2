@@ -1,0 +1,1495 @@
+{% extends 'base.htm' %}
+{% block title %}{% if item_to_update %}Update Service Item{% else %}Add Service Item{% endif %} | FIX-NOW Admin{% endblock title %}
+
+{% block content %}
+
+<!-- Service Management Section -->
+<section class="service-management-section">
+    <div class="container">
+        <div class="row">
+            <!-- Service Form Column -->
+            <div class="col-lg-5 col-md-6">
+                <div class="service-form-card">
+                    <!-- Header -->
+                    <div class="service-form-header">
+                        <div class="service-form-icon">
+                            <i class="fas fa-{% if item_to_update %}edit{% else %}plus-circle{% endif %}"></i>
+                        </div>
+                        <h2 class="service-form-title">
+                            {% if item_to_update %}Update Service Item{% else %}Add New Service Item{% endif %}
+                        </h2>
+                        <p class="service-form-subtitle">
+                            {% if item_to_update %}Modify service item details{% else %}Create a new service offering{% endif %}
+                        </p>
+                    </div>
+
+                    <!-- Service Form -->
+                    <div class="service-form">
+                        <form method="post" enctype="multipart/form-data" id="serviceForm">
+                            {% csrf_token %}
+                            
+                            <!-- Service Category Dropdown -->
+                            <div class="input-group">
+                                <div class="input-icon">
+                                    <i class="fas fa-layer-group"></i>
+                                </div>
+                                <select name="service" class="form-control-custom select-custom" id="serviceSelect" required>
+                                    <option value="">Select Service Category</option>
+                                    {% for service in services %}
+                                        <option value="{{ service.id }}" 
+                                                {% if item_to_update and item_to_update.service.id == service.id %}selected{% endif %}>
+                                            {{ service.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="input-help">
+                                <small>Choose the category this service belongs to</small>
+                            </div>
+
+                            <!-- Name Input -->
+                            <div class="input-group">
+                                <div class="input-icon">
+                                    <i class="fas fa-tag"></i>
+                                </div>
+                                <input type="text" 
+                                       name="name" 
+                                       placeholder="Service item name" 
+                                       class="form-control-custom" 
+                                       id="nameInput"
+                                       value="{{ item_to_update.name|default:'' }}"
+                                       required>
+                            </div>
+                            <div class="input-help">
+                                <small>Enter the service name (e.g., Air Conditioner Repair)</small>
+                            </div>
+
+                            <!-- Description Input -->
+                            <div class="input-group">
+                                <div class="input-icon textarea-icon">
+                                    <i class="fas fa-align-left"></i>
+                                </div>
+                                <textarea name="description" 
+                                          placeholder="Service description" 
+                                          class="form-control-custom textarea-custom" 
+                                          id="descriptionInput"
+                                          rows="4" required>{{ item_to_update.description|default:'' }}</textarea>
+                            </div>
+                            <div class="input-help">
+                                <small>Provide a detailed description of this service</small>
+                            </div>
+
+                            <!-- Price and Duration Row -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <!-- Price Input -->
+                                    <div class="input-group">
+                                        <div class="input-icon">
+                                            <i class="fas fa-rupee-sign"></i>
+                                        </div>
+                                        <input type="number" 
+                                               step="0.01" 
+                                               name="price" 
+                                               placeholder="Price" 
+                                               class="form-control-custom" 
+                                               id="priceInput"
+                                               value="{{ item_to_update.price|default:'' }}"
+                                               required>
+                                    </div>
+                                    <div class="input-help">
+                                        <small>Service price in ₹</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <!-- Duration Input -->
+                                    <div class="input-group">
+                                        <div class="input-icon">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <input type="number" 
+                                               name="duration_minutes" 
+                                               placeholder="Duration" 
+                                               class="form-control-custom" 
+                                               id="durationInput"
+                                               value="{{ item_to_update.duration_minutes|default:'' }}"
+                                               required>
+                                    </div>
+                                    <div class="input-help">
+                                        <small>Duration in minutes</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Image Upload -->
+                            <div class="image-upload-group">
+                                <label class="image-upload-label">
+                                    <div class="image-upload-area" id="imageUploadArea">
+                                        {% if item_to_update.main_image %}
+                                            <img src="{{ item_to_update.main_image.url }}" class="preview-image" id="previewImage">
+                                            <div class="image-overlay">
+                                                <i class="fas fa-camera"></i>
+                                                <span>Change Image</span>
+                                            </div>
+                                        {% else %}
+                                            <div class="upload-placeholder">
+                                                <i class="fas fa-cloud-upload-alt"></i>
+                                                <span>Upload Service Image</span>
+                                                <small>Click to browse or drag & drop</small>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <input type="file" name="main_image" id="imageInput" accept="image/*" hidden>
+                                </label>
+                                <div class="input-help">
+                                    <small>Recommended: 600x400px, JPG or PNG format</small>
+                                </div>
+                            </div>
+
+                            <!-- Checkboxes -->
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" 
+                                           name="popular" 
+                                           id="popularCheck" 
+                                           {% if item_to_update.popular %}checked{% endif %}>
+                                    <label for="popularCheck" class="checkbox-label">
+                                        <span class="checkbox-custom"></span>
+                                        <span class="checkbox-text">
+                                            <strong>Popular Service</strong>
+                                            <small>Display in featured services</small>
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <div class="checkbox-item">
+                                    <input type="checkbox" 
+                                           name="shutdown" 
+                                           id="shutdownCheck" 
+                                           {% if item_to_update.shutdown %}checked{% endif %}>
+                                    <label for="shutdownCheck" class="checkbox-label">
+                                        <span class="checkbox-custom shutdown"></span>
+                                        <span class="checkbox-text">
+                                            <strong>Temporarily Shutdown</strong>
+                                            <small>Hide service from public view</small>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn-service-submit">
+                                <span class="btn-text">
+                                    {% if item_to_update %}Update Service Item{% else %}Add Service Item{% endif %}
+                                </span>
+                                <span class="btn-icon">
+                                    <i class="fas fa-{% if item_to_update %}save{% else %}plus{% endif %}"></i>
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services List Column -->
+            <div class="col-lg-7 col-md-6">
+                <div class="services-list-card">
+                    <!-- Header -->
+                    <div class="services-list-header">
+                        <h3 class="services-list-title">
+                            <i class="fas fa-list"></i>
+                            Service Items by Category
+                        </h3>
+                        <div class="services-count">
+                            <span class="count-badge">{{ items|length }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Services by Category -->
+                    <div class="services-table-container">
+                        {% if services %}
+                            {% for service in services %}
+                                <div class="category-section">
+                                    <div class="category-header">
+                                        <h4 class="category-title">
+                                            <i class="fas fa-folder-open"></i>
+                                            {{ service.name }}
+                                        </h4>
+                                        <span class="category-count">
+                                            {% with service_items=items|dictsort:"service.name" %}
+                                                {% for item in service_items %}
+                                                    {% if item.service.id == service.id %}
+                                                        {% if forloop.first %}1{% else %}{{ forloop.counter }}{% endif %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endwith %} items
+                                        </span>
+                                    </div>
+
+                                    <div class="service-items-grid">
+                                        {% for item in items %}
+                                            {% if item.service.id == service.id %}
+                                                <div class="service-item-card {% if item.shutdown %}shutdown{% endif %}">
+                                                    <div class="service-item-image">
+                                                        {% if item.main_image %}
+                                                            <img src="{{ item.main_image.url }}" alt="{{ item.name }}">
+                                                        {% else %}
+                                                            <div class="no-image">
+                                                                <i class="fas fa-image"></i>
+                                                            </div>
+                                                        {% endif %}
+                                                        
+                                                        <!-- Status Badges -->
+                                                        <div class="service-badges">
+                                                            {% if item.popular %}
+                                                                <span class="badge badge-popular">
+                                                                    <i class="fas fa-star"></i>
+                                                                    Popular
+                                                                </span>
+                                                            {% endif %}
+                                                            {% if item.shutdown %}
+                                                                <span class="badge badge-shutdown">
+                                                                    <i class="fas fa-pause"></i>
+                                                                    Shutdown
+                                                                </span>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="service-item-content">
+                                                        <h5 class="service-item-name">{{ item.name }}</h5>
+                                                        <p class="service-item-description">
+                                                            {{ item.description|truncatechars:60 }}
+                                                        </p>
+                                                        <div class="service-item-details">
+                                                            <div class="detail-item">
+                                                                <i class="fas fa-rupee-sign"></i>
+                                                                <span>₹{{ item.price }}</span>
+                                                            </div>
+                                                            <div class="detail-item">
+                                                                <i class="fas fa-clock"></i>
+                                                                <span>{{ item.duration_minutes }}min</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="service-item-actions">
+                                                        <a href="{% url 'update_service_item' item.pk %}" 
+                                                           class="btn-action btn-edit"
+                                                           title="Edit Service Item">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="{% url 'delete_service_item' item.pk %}" 
+                                                           class="btn-action btn-delete"
+                                                           title="Delete Service Item"
+                                                           onclick="return confirm('Are you sure you want to delete this service item?')">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                        
+                                        <!-- Empty state for category -->
+                                        {% if not items %}
+                                            <div class="empty-category">
+                                                <i class="fas fa-box-open"></i>
+                                                <p>No services in this category yet</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <i class="fas fa-folder-open"></i>
+                                </div>
+                                <h4>No Service Categories Found</h4>
+                                <p>Please create service categories first before adding service items</p>
+                                <a href="{% url 'add_category' %}" class="btn-create-category">
+                                    <i class="fas fa-plus"></i>
+                                    Create Category
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+/* Import matching styles from category management */
+:root {
+    --primary-color: #2C2C2C;
+    --accent-color: #00A699;
+    --text-color: #6F6F6F;
+    --background-color: #F7F7F7;
+    --white: #FFFFFF;
+    --hover-color: #008C84;
+    --light-gray: #F8F9FA;
+    --border-color: #E9ECEF;
+    --success-color: #28a745;
+    --error-color: #dc3545;
+    --warning-color: #ffc107;
+    --staff-accent: #4A90E2;
+    --staff-hover: #357ABD;
+}
+
+body {
+    background: linear-gradient(135deg, var(--background-color) 0%, #e8f4f8 100%);
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+}
+
+/* Service Management Section */
+.service-management-section {
+    padding: 120px 0 60px;
+    min-height: 100vh;
+}
+
+/* Service Form Card */
+.service-form-card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 40px 35px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(74, 144, 226, 0.1);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 30px;
+    height: fit-content;
+    position: sticky;
+    top: 30px;
+}
+
+.service-form-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--staff-accent), var(--staff-hover));
+}
+
+/* Form Header */
+.service-form-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.service-form-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, var(--staff-accent), var(--staff-hover));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: white;
+    font-size: 1.8rem;
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.3);
+}
+
+.service-form-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+
+.service-form-subtitle {
+    color: var(--text-color);
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+/* Form Styles */
+.input-group {
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.input-icon {
+    position: absolute;
+    left: 18px;
+    top: 18px;
+    color: var(--staff-accent);
+    font-size: 1rem;
+    z-index: 2;
+}
+
+.textarea-icon {
+    top: 18px;
+}
+
+.form-control-custom {
+    width: 100%;
+    padding: 16px 18px 16px 50px;
+    border: 2px solid var(--border-color);
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    background: var(--white);
+    transition: all 0.3s ease;
+    outline: none;
+    resize: none;
+}
+
+.select-custom {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+}
+
+.textarea-custom {
+    min-height: 100px;
+    padding-top: 18px;
+    line-height: 1.5;
+}
+
+.form-control-custom:focus {
+    border-color: var(--staff-accent);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    transform: translateY(-1px);
+}
+
+.form-control-custom::placeholder {
+    color: var(--text-color);
+    font-weight: 400;
+}
+
+.input-help {
+    margin-bottom: 22px;
+    padding-left: 18px;
+}
+
+.input-help small {
+    color: var(--text-color);
+    font-size: 0.85rem;
+}
+
+/* Image Upload Styles */
+.image-upload-group {
+    margin-bottom: 25px;
+}
+
+.image-upload-area {
+    border: 2px dashed var(--border-color);
+    border-radius: 14px;
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    background: var(--light-gray);
+}
+
+.image-upload-area:hover {
+    border-color: var(--staff-accent);
+    background: rgba(74, 144, 226, 0.05);
+}
+
+.upload-placeholder {
+    color: var(--text-color);
+}
+
+.upload-placeholder i {
+    font-size: 2.5rem;
+    color: var(--staff-accent);
+    margin-bottom: 12px;
+    display: block;
+}
+
+.upload-placeholder span {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--primary-color);
+}
+
+.upload-placeholder small {
+    font-size: 0.85rem;
+}
+
+.preview-image {
+    width: 100%;
+    max-height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(74, 144, 226, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    color: white;
+}
+
+.image-upload-area:hover .image-overlay {
+    opacity: 1;
+}
+
+.image-overlay i {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+/* Checkbox Styles */
+.checkbox-group {
+    margin-bottom: 30px;
+}
+
+.checkbox-item {
+    margin-bottom: 18px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    margin-top: 2px;
+}
+
+.checkbox-custom.shutdown {
+    border-color: var(--error-color);
+}
+
+input[type="checkbox"]:checked + .checkbox-label .checkbox-custom {
+    background: var(--staff-accent);
+    border-color: var(--staff-accent);
+}
+
+input[type="checkbox"]:checked + .checkbox-label .checkbox-custom.shutdown {
+    background: var(--error-color);
+    border-color: var(--error-color);
+}
+
+input[type="checkbox"]:checked + .checkbox-label .checkbox-custom::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.checkbox-text strong {
+    display: block;
+    color: var(--primary-color);
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+}
+
+.checkbox-text small {
+    color: var(--text-color);
+    font-size: 0.8rem;
+}
+
+/* Submit Button */
+.btn-service-submit {
+    width: 100%;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, var(--staff-accent), var(--staff-hover));
+    border: none;
+    border-radius: 14px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-service-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+}
+
+.btn-service-submit::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-service-submit:hover::before {
+    left: 100%;
+}
+
+.btn-text, .btn-icon {
+    position: relative;
+    z-index: 1;
+}
+
+/* Services List Card */
+.services-list-card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 35px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 166, 153, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.services-list-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-color), var(--hover-color));
+}
+
+.services-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.services-list-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.services-list-title i {
+    color: var(--accent-color);
+}
+
+.count-badge {
+    background: var(--accent-color);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Category Sections */
+.category-section {
+    margin-bottom: 40px;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    background: var(--light-gray);
+    border-radius: 12px;
+    border-left: 4px solid var(--accent-color);
+}
+
+.category-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.category-title i {
+    color: var(--accent-color);
+}
+
+.category-count {
+    background: var(--accent-color);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* Service Items Grid */
+.service-items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.service-item-card {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.service-item-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    border-color: var(--accent-color);
+}
+
+.service-item-card.shutdown {
+    opacity: 0.7;
+    border-color: var(--error-color);
+}
+
+.service-item-image {
+    position: relative;
+    height: 120px;
+    overflow: hidden;
+    background: var(--light-gray);
+}
+
+.service-item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-color);
+    font-size: 1.8rem;
+}
+
+.service-badges {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.badge {
+    padding: 3px 6px;
+    border-radius: 10px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.badge-popular {
+    background: var(--warning-color);
+    color: white;
+}
+
+.badge-shutdown {
+    background: var(--error-color);
+    color: white;
+}
+
+.service-item-content {
+    padding: 18px;
+}
+
+.service-item-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.service-item-description {
+    color: var(--text-color);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-bottom: 12px;
+}
+
+.service-item-details {
+    display: flex;
+    gap: 15px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--accent-color);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.detail-item i {
+    font-size: 0.8rem;
+}
+
+.service-item-actions {
+    padding: 12px 18px;
+    background: var(--light-gray);
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.btn-action {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.8rem;
+}
+
+.btn-edit {
+    background: var(--staff-accent);
+    color: white;
+}
+
+.btn-edit:hover {
+    background: var(--staff-hover);
+    color: white;
+    transform: scale(1.1);
+}
+
+.btn-delete {
+    background: var(--error-color);
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #c82333;
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Empty States */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-color);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: var(--border-color);
+    margin-bottom: 20px;
+}
+
+.empty-state h4 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.btn-create-category {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--accent-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 500;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+}
+
+.btn-create-category:hover {
+    background: var(--hover-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.empty-category {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-color);
+    background: var(--light-gray);
+    border-radius: 12px;
+    border: 2px dashed var(--border-color);
+}
+
+.empty-category i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: var(--border-color);
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .service-management-section {
+        padding: 100px 0 40px;
+    }
+    
+    .service-form-card {
+        position: static;
+        margin-bottom: 30px;
+    }
+    
+    .service-items-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .service-form-card,
+    .services-list-card {
+        padding: 25px 20px;
+        margin: 15px;
+        border-radius: 16px;
+    }
+    
+    .service-form-title {
+        font-size: 1.5rem;
+    }
+    
+    .services-list-title {
+        font-size: 1.3rem;
+    }
+    
+    .service-items-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .services-list-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .category-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .service-item-details {
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 576px) {
+    .service-management-section {
+        padding: 80px 0 30px;
+    }
+    
+    .image-upload-area {
+        padding: 20px 15px;
+    }
+    
+    .upload-placeholder i {
+        font-size: 2rem;
+    }
+    
+    .service-item-card {
+        margin-bottom: 15px;
+    }
+}
+
+/* Animation */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.service-form-card,
+.services-list-card {
+    animation: slideUp 0.6s ease-out;
+}
+
+.service-item-card {
+    animation: slideUp 0.4s ease-out;
+}
+
+.category-section {
+    animation: slideUp 0.5s ease-out;
+}
+
+/* Loading and success states */
+.btn-service-submit.loading {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.btn-service-submit.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Form validation styles */
+.form-control-custom:valid:not(:placeholder-shown) {
+    border-color: var(--success-color);
+}
+
+.form-control-custom:invalid:not(:placeholder-shown) {
+    border-color: var(--error-color);
+}
+
+/* Enhanced hover effects */
+.service-item-card:hover .service-item-name {
+    color: var(--accent-color);
+}
+
+.form-control-custom:focus + .input-icon {
+    color: var(--staff-accent);
+    transform: scale(1.1);
+}
+
+/* Price formatting */
+.detail-item .fas.fa-rupee-sign {
+    color: var(--success-color);
+}
+
+/* Duration formatting */
+.detail-item .fas.fa-clock {
+    color: var(--warning-color);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('serviceForm');
+    const nameInput = document.getElementById('nameInput');
+    const descriptionInput = document.getElementById('descriptionInput');
+    const priceInput = document.getElementById('priceInput');
+    const durationInput = document.getElementById('durationInput');
+    const serviceSelect = document.getElementById('serviceSelect');
+    const imageInput = document.getElementById('imageInput');
+    const imageUploadArea = document.getElementById('imageUploadArea');
+    const submitBtn = document.querySelector('.btn-service-submit');
+
+    // Image upload preview
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showMessage('Image size should be less than 5MB', 'error');
+                this.value = '';
+                return;
+            }
+            
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                showMessage('Please select a valid image file', 'error');
+                this.value = '';
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imageUploadArea.innerHTML = `
+                    <img src="${e.target.result}" class="preview-image" id="previewImage">
+                    <div class="image-overlay">
+                        <i class="fas fa-camera"></i>
+                        <span>Change Image</span>
+                    </div>
+                `;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Drag and drop functionality
+    imageUploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.style.borderColor = 'var(--staff-accent)';
+        this.style.background = 'rgba(74, 144, 226, 0.1)';
+    });
+
+    imageUploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.style.borderColor = 'var(--border-color)';
+        this.style.background = 'var(--light-gray)';
+    });
+
+    imageUploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.style.borderColor = 'var(--border-color)';
+        this.style.background = 'var(--light-gray)';
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            imageInput.files = files;
+            imageInput.dispatchEvent(new Event('change'));
+        }
+    });
+
+    // Form validation
+    function validateForm() {
+        const service = serviceSelect.value;
+        const name = nameInput.value.trim();
+        const description = descriptionInput.value.trim();
+        const price = parseFloat(priceInput.value);
+        const duration = parseInt(durationInput.value);
+        
+        if (!service) {
+            showMessage('Please select a service category', 'error');
+            serviceSelect.focus();
+            return false;
+        }
+        
+        if (name.length < 3) {
+            showMessage('Service name must be at least 3 characters long', 'error');
+            nameInput.focus();
+            return false;
+        }
+        
+        if (description.length < 20) {
+            showMessage('Description must be at least 20 characters long', 'error');
+            descriptionInput.focus();
+            return false;
+        }
+        
+        if (isNaN(price) || price <= 0) {
+            showMessage('Please enter a valid price greater than 0', 'error');
+            priceInput.focus();
+            return false;
+        }
+        
+        if (price > 100000) {
+            showMessage('Price cannot exceed ₹1,00,000', 'error');
+            priceInput.focus();
+            return false;
+        }
+        
+        if (isNaN(duration) || duration <= 0) {
+            showMessage('Please enter a valid duration in minutes', 'error');
+            durationInput.focus();
+            return false;
+        }
+        
+        if (duration > 1440) { // 24 hours
+            showMessage('Duration cannot exceed 24 hours (1440 minutes)', 'error');
+            durationInput.focus();
+            return false;
+        }
+        
+        return true;
+    }
+
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        if (!validateForm()) {
+            e.preventDefault();
+            return;
+        }
+        
+        // Add loading state
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+        
+        const btnText = submitBtn.querySelector('.btn-text');
+        const originalText = btnText.textContent;
+        btnText.textContent = 'Processing...';
+        
+        // Show processing message
+        showMessage('Processing service item...', 'info');
+    });
+
+    // Real-time validation feedback
+    nameInput.addEventListener('input', function() {
+        const isValid = this.value.trim().length >= 3;
+        this.style.borderColor = isValid ? 'var(--success-color)' : 'var(--error-color)';
+    });
+
+    descriptionInput.addEventListener('input', function() {
+        const isValid = this.value.trim().length >= 20;
+        this.style.borderColor = isValid ? 'var(--success-color)' : 'var(--error-color)';
+        
+        // Show character count
+        const charCount = this.value.length;
+        const helpText = this.parentNode.nextElementSibling.querySelector('small');
+        helpText.textContent = `${charCount}/500 characters (minimum 20 required)`;
+    });
+
+    priceInput.addEventListener('input', function() {
+        const price = parseFloat(this.value);
+        const isValid = !isNaN(price) && price > 0 && price <= 100000;
+        this.style.borderColor = isValid ? 'var(--success-color)' : 'var(--error-color)';
+        
+        // Format price display
+        if (!isNaN(price) && price > 0) {
+            const helpText = this.parentNode.nextElementSibling.querySelector('small');
+            helpText.textContent = `Price: ₹${price.toLocaleString('en-IN')}`;
+        }
+    });
+
+    durationInput.addEventListener('input', function() {
+        const duration = parseInt(this.value);
+        const isValid = !isNaN(duration) && duration > 0 && duration <= 1440;
+        this.style.borderColor = isValid ? 'var(--success-color)' : 'var(--error-color)';
+        
+        // Show duration in hours and minutes
+        if (!isNaN(duration) && duration > 0) {
+            const hours = Math.floor(duration / 60);
+            const minutes = duration % 60;
+            const helpText = this.parentNode.nextElementSibling.querySelector('small');
+            
+            if (hours > 0) {
+                helpText.textContent = `Duration: ${hours}h ${minutes}m`;
+            } else {
+                helpText.textContent = `Duration: ${minutes} minutes`;
+            }
+        }
+    });
+
+    serviceSelect.addEventListener('change', function() {
+        const isValid = this.value !== '';
+        this.style.borderColor = isValid ? 'var(--success-color)' : 'var(--error-color)';
+    });
+
+    // Auto-focus on service select
+    serviceSelect.focus();
+    
+    // Auto-save functionality
+    const inputs = document.querySelectorAll('#serviceForm input, #serviceForm textarea, #serviceForm select');
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            // Save to memory for draft functionality
+            const formData = new FormData(document.getElementById('serviceForm'));
+            const data = Object.fromEntries(formData.entries());
+            // Store in memory only (no localStorage)
+            window.serviceFormDraft = data;
+        });
+    });
+});
+
+// Show message function
+function showMessage(message, type) {
+    // Remove existing messages
+    const existingAlert = document.querySelector('.alert-message');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
+
+    let alertClass, iconClass, bgColor;
+    
+    switch(type) {
+        case 'success':
+            alertClass = 'alert-success';
+            iconClass = 'fas fa-check-circle';
+            bgColor = 'var(--success-color)';
+            break;
+        case 'error':
+            alertClass = 'alert-error';
+            iconClass = 'fas fa-exclamation-triangle';
+            bgColor = 'var(--error-color)';
+            break;
+        case 'info':
+            alertClass = 'alert-info';
+            iconClass = 'fas fa-info-circle';
+            bgColor = 'var(--staff-accent)';
+            break;
+        default:
+            alertClass = 'alert-info';
+            iconClass = 'fas fa-info-circle';
+            bgColor = 'var(--staff-accent)';
+    }
+    
+    const alertHtml = `
+        <div class="alert-message ${alertClass}" style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            padding: 16px 20px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 300px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            animation: slideIn 0.3s ease-out;
+            background: ${bgColor};
+        ">
+            <i class="${iconClass}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', alertHtml);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        const alert = document.querySelector('.alert-message');
+        if (alert) {
+            alert.style.animation = 'slideOut 0.3s ease-in';
+            setTimeout(() => alert.remove(), 300);
+        }
+    }, 4000);
+}
+
+// Add slide animations for messages
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+
+// Initialize tooltips and search functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Add search functionality for service items
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.placeholder = 'Search service items...';
+    searchInput.className = 'form-control-custom';
+    searchInput.style.marginBottom = '20px';
+    
+    const servicesContainer = document.querySelector('.services-table-container');
+    if (servicesContainer && document.querySelectorAll('.service-item-card').length > 0) {
+        servicesContainer.insertBefore(searchInput, servicesContainer.firstChild);
+        
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const serviceCards = document.querySelectorAll('.service-item-card');
+            const categorySection = document.querySelectorAll('.category-section');
+            
+            serviceCards.forEach(card => {
+                const name = card.querySelector('.service-item-name').textContent.toLowerCase();
+                const description = card.querySelector('.service-item-description').textContent.toLowerCase();
+                const isVisible = name.includes(searchTerm) || description.includes(searchTerm);
+                card.style.display = isVisible ? 'block' : 'none';
+            });
+            
+            // Hide empty categories
+            categorySection.forEach(section => {
+                const visibleCards = section.querySelectorAll('.service-item-card[style="display: block"], .service-item-card:not([style*="display: none"])');
+                section.style.display = visibleCards.length > 0 ? 'block' : 'none';
+            });
+        });
+    }
+    
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + S to save form
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            const form = document.getElementById('serviceForm');
+            if (form) {
+                form.dispatchEvent(new Event('submit'));
+            }
+        }
+        
+        // Escape to clear form
+        if (e.key === 'Escape') {
+            const form = document.getElementById('serviceForm');
+            if (form && confirm('Clear form data?')) {
+                form.reset();
+                const previewImage = document.getElementById('previewImage');
+                if (previewImage) {
+                    location.reload();
+                }
+            }
+        }
+        
+        // Ctrl/Cmd + F to focus search
+        if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+            e.preventDefault();
+            const searchInput = document.querySelector('input[placeholder="Search service items..."]');
+            if (searchInput) {
+                searchInput.focus();
+            }
+        }
+    });
+    
+    // Add smooth scrolling for better UX
+    if (window.location.hash) {
+        const target = document.querySelector(window.location.hash);
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+});
+</script>
+
+{% endblock content %}

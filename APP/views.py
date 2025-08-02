@@ -3,7 +3,7 @@ from django.contrib import messages
 from .models import UserProfile, ServiceItem, CartItem, Service,FavoriteItem
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.models import User
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 import json
@@ -198,3 +198,124 @@ Message:
             return render(request, 'Main/contact.htm', {'error': True})
 
     return render(request, 'Main/contact.htm')
+
+
+#Admin
+
+def staff_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None and user.is_staff:
+            login(request, user)
+            return redirect('add_category') 
+        else:
+            return render(request, 'Admin/login.htm', {'error': 'Invalid credentials or not staff'})
+
+    return render(request, 'Admin/login.htm')
+
+
+def add_category(request):
+    services = Service.objects.all().order_by('-created_at')
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        image = request.FILES.get('image')
+        popular = bool(request.POST.get('popular'))
+        shutdown = bool(request.POST.get('shutdown'))
+
+        Service.objects.create(
+            name=name,
+            description=description,
+            image=image,
+            popular=popular,
+            shutdown=shutdown
+        )
+        return redirect('add_category')
+
+    return render(request, 'Admin/addcategory.htm', {'services': services})
+
+
+def delete_category(request, pk):
+    service = get_object_or_404(Service, pk=pk)
+    service.delete()
+    return redirect('add_category')
+
+
+def update_category(request, pk):
+    service = get_object_or_404(Service, pk=pk)
+
+    if request.method == 'POST':
+        service.name = request.POST.get('name')
+        service.description = request.POST.get('description')
+        image = request.FILES.get('image')
+        if image:
+            service.image = image
+        service.popular = bool(request.POST.get('popular'))
+        service.shutdown = bool(request.POST.get('shutdown'))
+        service.save()
+        return redirect('add_category')
+
+    return render(request, 'Admin/updatecategory.htm', {'service': service})
+
+
+
+def add_service_item(request):
+    services = Service.objects.all()
+    items = ServiceItem.objects.select_related('service').order_by('-created_at')
+
+    if request.method == 'POST':
+        service_id = request.POST.get('service')
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        price = request.POST.get('price') or None
+        duration = request.POST.get('duration_minutes') or None
+        main_image = request.FILES.get('main_image')
+        popular = bool(request.POST.get('popular'))
+        shutdown = bool(request.POST.get('shutdown'))
+
+        if service_id:
+            service = get_object_or_404(Service, id=service_id)
+            ServiceItem.objects.create(
+                service=service,
+                name=name,
+                description=description,
+                price=price,
+                duration_minutes=duration,
+                main_image=main_image,
+                popular=popular,
+                shutdown=shutdown
+            )
+        return redirect('add_service_item')
+
+    return render(request, 'Admin/addservices.htm', {'services': services, 'items': items})
+
+
+def delete_service_item(request, pk):
+    item = get_object_or_404(ServiceItem, pk=pk)
+    item.delete()
+    return redirect('add_service_item')
+
+
+def update_service_item(request, pk):
+    item = get_object_or_404(ServiceItem, pk=pk)
+    services = Service.objects.all()
+
+    if request.method == 'POST':
+        item.service_id = request.POST.get('service')
+        item.name = request.POST.get('name')
+        item.description = request.POST.get('description')
+        item.price = request.POST.get('price') or None
+        item.duration_minutes = request.POST.get('duration_minutes') or None
+        new_image = request.FILES.get('main_image')
+        if new_image:
+            item.main_image = new_image
+        item.popular = bool(request.POST.get('popular'))
+        item.shutdown = bool(request.POST.get('shutdown'))
+        item.save()
+        return redirect('add_service_item')
+
+    return render(request, 'Admin/updateservices.htm', {'item': item, 'services': services})

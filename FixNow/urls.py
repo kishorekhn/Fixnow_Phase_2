@@ -19,6 +19,15 @@ urlpatterns = [
     path('orders/', views.orders_view, name='orders'),
     path('favorites/', views.favorites_view, name='favorites'),
     path('contact',views.contact_view, name='contact'),
+
+    path('adminn/', views.staff_login, name='staff_login'),
+    path('adminn/addcategory/', views.add_category, name='add_category'),
+    path('adminn/deletecategory/<int:pk>/', views.delete_category, name='delete_category'),
+    path('adminn/updatecategory/<int:pk>/', views.update_category, name='update_category'),
+    path('adminn/addservices/', views.add_service_item, name='add_service_item'),
+    path('adminn/deleteserviceitem/<int:pk>/', views.delete_service_item, name='delete_service_item'),
+    path('adminn/updateserviceitem/<int:pk>/', views.update_service_item, name='update_service_item'),
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
