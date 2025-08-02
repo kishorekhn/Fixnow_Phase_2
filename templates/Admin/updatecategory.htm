@@ -1,0 +1,1237 @@
+{% extends 'base.htm' %}
+{% block title %}Update Category | FIX-NOW{% endblock title %}
+
+{% block content %}
+
+<!-- Update Category Section -->
+<section class="update-category-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <!-- Update Category Card -->
+                <div class="update-category-card">
+                    <!-- Header -->
+                    <div class="update-category-header">
+                        <div class="update-category-icon">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <h2 class="update-category-title">Update Category</h2>
+                        <p class="update-category-subtitle">Modify category details and settings</p>
+                    </div>
+
+                    <!-- Update Category Form -->
+                    <div class="update-category-form">
+                        <form method="post" enctype="multipart/form-data" id="updateCategoryForm">
+                            {% csrf_token %}
+                            
+                            <!-- Name Input Group -->
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-tag"></i>
+                                    Category Name
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-icon">
+                                        <i class="fas fa-font"></i>
+                                    </div>
+                                    <input type="text" 
+                                           name="name" 
+                                           value="{{ service.name }}"
+                                           placeholder="Enter category name" 
+                                           class="form-control-custom" 
+                                           id="nameInput"
+                                           required>
+                                </div>
+                                <div class="input-help">
+                                    <small>Choose a clear and descriptive name for the category</small>
+                                </div>
+                            </div>
+
+                            <!-- Description Input Group -->
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-align-left"></i>
+                                    Description
+                                </label>
+                                <div class="textarea-group">
+                                    <div class="textarea-icon">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                    <textarea name="description" 
+                                              placeholder="Enter category description"
+                                              class="textarea-control-custom" 
+                                              id="descriptionInput"
+                                              rows="4">{{ service.description }}</textarea>
+                                </div>
+                                <div class="input-help">
+                                    <small>Provide a detailed description of the category</small>
+                                </div>
+                            </div>
+
+                            <!-- Image Upload Group -->
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-image"></i>
+                                    Category Image
+                                </label>
+                                
+                                <!-- Current Image Display -->
+                                {% if service.image %}
+                                <div class="current-image-display">
+                                    <div class="current-image-label">
+                                        <i class="fas fa-eye"></i>
+                                        <span>Current Image</span>
+                                    </div>
+                                    <div class="current-image-container">
+                                        <img src="{{ service.image.url }}" alt="Current category image" class="current-image">
+                                        <div class="image-overlay">
+                                            <i class="fas fa-search-plus"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                <!-- File Upload -->
+                                <div class="file-upload-group">
+                                    <div class="file-upload-area" id="fileUploadArea">
+                                        <div class="file-upload-icon">
+                                            <i class="fas fa-cloud-upload-alt"></i>
+                                        </div>
+                                        <div class="file-upload-text">
+                                            <p class="upload-main-text">Click to upload new image</p>
+                                            <p class="upload-sub-text">or drag and drop here</p>
+                                        </div>
+                                        <input type="file" 
+                                               name="image" 
+                                               class="file-input" 
+                                               id="imageInput"
+                                               accept="image/*">
+                                    </div>
+                                </div>
+                                <div class="input-help">
+                                    <small>Upload a high-quality image (JPG, PNG, GIF). Leave empty to keep current image.</small>
+                                </div>
+                            </div>
+
+                            <!-- Settings Group -->
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-cogs"></i>
+                                    Category Settings
+                                </label>
+                                
+                                <div class="settings-grid">
+                                    <!-- Popular Toggle -->
+                                    <div class="setting-item">
+                                        <div class="toggle-group">
+                                            <input type="checkbox" 
+                                                   name="popular" 
+                                                   id="popularToggle"
+                                                   class="toggle-input"
+                                                   {% if service.popular %}checked{% endif %}>
+                                            <label for="popularToggle" class="toggle-label">
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="setting-info">
+                                            <div class="setting-title">
+                                                <i class="fas fa-star"></i>
+                                                Popular Category
+                                            </div>
+                                            <div class="setting-description">
+                                                Mark as a popular/featured category
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Shutdown Toggle -->
+                                    <div class="setting-item">
+                                        <div class="toggle-group">
+                                            <input type="checkbox" 
+                                                   name="shutdown" 
+                                                   id="shutdownToggle"
+                                                   class="toggle-input"
+                                                   {% if service.shutdown %}checked{% endif %}>
+                                            <label for="shutdownToggle" class="toggle-label shutdown">
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="setting-info">
+                                            <div class="setting-title">
+                                                <i class="fas fa-power-off"></i>
+                                                Shutdown Category
+                                            </div>
+                                            <div class="setting-description">
+                                                Temporarily disable this category
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="form-actions">
+                                <button type="submit" class="btn-update-category">
+                                    <span class="btn-text">Update Category</span>
+                                    <span class="btn-icon">
+                                        <i class="fas fa-save"></i>
+                                    </span>
+                                </button>
+                                
+                                <a href="{% url 'add_category' %}" class="btn-back">
+                                    <span class="btn-icon">
+                                        <i class="fas fa-arrow-left"></i>
+                                    </span>
+                                    <span class="btn-text">Back to Category List</span>
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+/* Import matching styles from staff login */
+:root {
+    --primary-color: #2C2C2C;
+    --accent-color: #00A699;
+    --text-color: #6F6F6F;
+    --background-color: #F7F7F7;
+    --white: #FFFFFF;
+    --hover-color: #008C84;
+    --light-gray: #F8F9FA;
+    --border-color: #E9ECEF;
+    --success-color: #28a745;
+    --error-color: #dc3545;
+    --staff-accent: #4A90E2;
+    --staff-hover: #357ABD;
+    --warning-color: #ffc107;
+}
+
+body {
+    background: linear-gradient(135deg, var(--background-color) 0%, #e8f4f8 100%);
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+}
+
+/* Update Category Section */
+.update-category-section {
+    padding: 120px 0 80px;
+    min-height: 100vh;
+}
+
+/* Update Category Card */
+.update-category-card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 50px 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(74, 144, 226, 0.1);
+    position: relative;
+    overflow: hidden;
+    animation: slideUp 0.6s ease-out;
+}
+
+.update-category-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--staff-accent), var(--staff-hover));
+}
+
+/* Header */
+.update-category-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.update-category-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--staff-accent), var(--staff-hover));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    color: white;
+    font-size: 2rem;
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.3);
+}
+
+.update-category-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 12px;
+    line-height: 1.2;
+}
+
+.update-category-subtitle {
+    color: var(--text-color);
+    font-size: 1.1rem;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 35px;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 12px;
+}
+
+.form-label i {
+    color: var(--staff-accent);
+    font-size: 1rem;
+}
+
+/* Input Groups */
+.input-group {
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.input-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--staff-accent);
+    font-size: 1.1rem;
+    z-index: 2;
+}
+
+.form-control-custom {
+    width: 100%;
+    padding: 18px 20px 18px 55px;
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    background: var(--white);
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.form-control-custom:focus {
+    border-color: var(--staff-accent);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Textarea */
+.textarea-group {
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.textarea-icon {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    color: var(--staff-accent);
+    font-size: 1.1rem;
+    z-index: 2;
+}
+
+.textarea-control-custom {
+    width: 100%;
+    padding: 18px 20px 18px 55px;
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    background: var(--white);
+    transition: all 0.3s ease;
+    outline: none;
+    resize: vertical;
+    min-height: 120px;
+    font-family: inherit;
+}
+
+.textarea-control-custom:focus {
+    border-color: var(--staff-accent);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+/* Current Image Display */
+.current-image-display {
+    margin-bottom: 20px;
+}
+
+.current-image-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 12px;
+}
+
+.current-image-container {
+    position: relative;
+    display: inline-block;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.current-image-container:hover {
+    transform: scale(1.02);
+}
+
+.current-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    display: block;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(74, 144, 226, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.current-image-container:hover .image-overlay {
+    opacity: 1;
+}
+
+/* File Upload */
+.file-upload-group {
+    margin-bottom: 8px;
+}
+
+.file-upload-area {
+    border: 2px dashed var(--border-color);
+    border-radius: 16px;
+    padding: 40px 20px;
+    text-align: center;
+    background: var(--light-gray);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.file-upload-area:hover {
+    border-color: var(--staff-accent);
+    background: rgba(74, 144, 226, 0.05);
+}
+
+.file-upload-area.dragover {
+    border-color: var(--staff-accent);
+    background: rgba(74, 144, 226, 0.1);
+    transform: scale(1.02);
+}
+
+.file-upload-icon {
+    font-size: 3rem;
+    color: var(--staff-accent);
+    margin-bottom: 16px;
+}
+
+.upload-main-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 4px;
+}
+
+.upload-sub-text {
+    font-size: 0.95rem;
+    color: var(--text-color);
+    margin-bottom: 0;
+}
+
+.file-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Settings */
+.settings-grid {
+    display: grid;
+    gap: 20px;
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: var(--light-gray);
+    border-radius: 16px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.setting-item:hover {
+    background: rgba(74, 144, 226, 0.05);
+    border-color: rgba(74, 144, 226, 0.2);
+}
+
+/* Toggle Switch */
+.toggle-group {
+    position: relative;
+}
+
+.toggle-input {
+    display: none;
+}
+
+.toggle-label {
+    display: block;
+    width: 60px;
+    height: 30px;
+    background: var(--border-color);
+    border-radius: 30px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.toggle-label.shutdown {
+    background: var(--border-color);
+}
+
+.toggle-slider {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 24px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-input:checked + .toggle-label {
+    background: var(--staff-accent);
+}
+
+.toggle-input:checked + .toggle-label.shutdown {
+    background: var(--error-color);
+}
+
+.toggle-input:checked + .toggle-label .toggle-slider {
+    transform: translateX(30px);
+}
+
+.setting-info {
+    flex: 1;
+}
+
+.setting-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 4px;
+}
+
+.setting-title i {
+    color: var(--staff-accent);
+}
+
+.setting-description {
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+/* Input Help */
+.input-help {
+    margin-bottom: 8px;
+    padding-left: 20px;
+}
+
+.input-help small {
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Update Button */
+.btn-update-category {
+    padding: 18px 32px;
+    background: linear-gradient(135deg, var(--staff-accent), var(--staff-hover));
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+    min-width: 200px;
+}
+
+.btn-update-category:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+}
+
+.btn-update-category::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-update-category:hover::before {
+    left: 100%;
+}
+
+/* Back Button */
+.btn-back {
+    padding: 18px 32px;
+    background: var(--white);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    color: var(--text-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-width: 200px;
+}
+
+.btn-back:hover {
+    border-color: var(--staff-accent);
+    color: var(--staff-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.2);
+    text-decoration: none;
+}
+
+.btn-text {
+    position: relative;
+    z-index: 1;
+}
+
+.btn-icon {
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease;
+}
+
+.btn-update-category:hover .btn-icon {
+    transform: translateX(4px);
+}
+
+.btn-back:hover .btn-icon {
+    transform: translateX(-4px);
+}
+
+/* Animations */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .update-category-section {
+        padding: 100px 0 60px;
+    }
+    
+    .update-category-card {
+        padding: 40px 30px;
+        margin: 20px;
+        border-radius: 20px;
+    }
+    
+    .update-category-title {
+        font-size: 1.8rem;
+    }
+    
+    .update-category-subtitle {
+        font-size: 1rem;
+    }
+    
+    .update-category-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 1.8rem;
+    }
+    
+    .form-control-custom, .textarea-control-custom {
+        padding: 16px 18px 16px 50px;
+        font-size: 1rem;
+    }
+    
+    .input-icon, .textarea-icon {
+        left: 18px;
+        font-size: 1rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn-update-category, .btn-back {
+        min-width: 100%;
+        padding: 16px 20px;
+        font-size: 1rem;
+    }
+    
+    .file-upload-area {
+        padding: 30px 15px;
+    }
+    
+    .file-upload-icon {
+        font-size: 2.5rem;
+    }
+    
+    .current-image {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .update-category-card {
+        padding: 30px 20px;
+        margin: 15px;
+    }
+    
+    .update-category-title {
+        font-size: 1.6rem;
+    }
+    
+    .setting-item {
+        padding: 16px;
+    }
+    
+    .settings-grid {
+        gap: 16px;
+    }
+}
+
+/* Loading State */
+.btn-update-category.loading {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.btn-update-category.loading .btn-text {
+    opacity: 0;
+}
+
+.btn-update-category.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Validation States */
+.form-control-custom:invalid:not(:placeholder-shown),
+.textarea-control-custom:invalid:not(:placeholder-shown) {
+    border-color: var(--error-color);
+}
+
+.form-control-custom:valid:not(:placeholder-shown),
+.textarea-control-custom:valid:not(:placeholder-shown) {
+    border-color: var(--success-color);
+}
+
+.form-control-custom.invalid,
+.textarea-control-custom.invalid {
+    border-color: var(--error-color);
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('updateCategoryForm');
+    const nameInput = document.getElementById('nameInput');
+    const descriptionInput = document.getElementById('descriptionInput');
+    const imageInput = document.getElementById('imageInput');
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    const updateBtn = document.querySelector('.btn-update-category');
+
+    // File upload drag and drop functionality
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        fileUploadArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        fileUploadArea.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        fileUploadArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight() {
+        fileUploadArea.classList.add('dragover');
+    }
+
+    function unhighlight() {
+        fileUploadArea.classList.remove('dragover');
+    }
+
+    // Handle dropped files
+    fileUploadArea.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+            imageInput.files = files;
+            handleFileSelect(files[0]);
+        }
+    }
+
+    // Handle file selection
+    imageInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            handleFileSelect(e.target.files[0]);
+        }
+    });
+
+    function handleFileSelect(file) {
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Update upload area to show selected file
+                fileUploadArea.innerHTML = `
+                    <div class="file-upload-icon">
+                        <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
+                    </div>
+                    <div class="file-upload-text">
+                        <p class="upload-main-text">Image Selected</p>
+                        <p class="upload-sub-text">${file.name}</p>
+                    </div>
+                `;
+                fileUploadArea.style.borderColor = 'var(--success-color)';
+                fileUploadArea.style.background = 'rgba(40, 167, 69, 0.05)';
+            };
+            reader.readAsDataURL(file);
+        } else if (file) {
+            showMessage('Please select a valid image file', 'error');
+        }
+    }
+
+    // Form validation
+    function validateForm() {
+        const name = nameInput.value.trim();
+        const description = descriptionInput.value.trim();
+        
+        if (name.length < 2) {
+            nameInput.classList.add('invalid');
+            showMessage('Category name must be at least 2 characters long', 'error');
+            nameInput.focus();
+            return false;
+        }
+
+        if (description.length < 10) {
+            descriptionInput.classList.add('invalid');
+            showMessage('Description must be at least 10 characters long', 'error');
+            descriptionInput.focus();
+            return false;
+        }
+
+        return true;
+    }
+
+    // Real-time validation feedback
+    [nameInput, descriptionInput].forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('invalid');
+            
+            if (this === nameInput && this.value.trim().length >= 2) {
+                this.classList.add('valid');
+            } else if (this === descriptionInput && this.value.trim().length >= 10) {
+                this.classList.add('valid');
+            } else {
+                this.classList.remove('valid');
+            }
+        });
+    });
+
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        if (!validateForm()) {
+            e.preventDefault();
+            return;
+        }
+
+        // Add loading state
+        updateBtn.classList.add('loading');
+        updateBtn.disabled = true;
+        
+        // Show processing message
+        showMessage('Updating category...', 'info');
+    });
+
+    // Auto-focus on name input
+    nameInput.focus();
+
+    // Toggle switch animations
+    const toggleInputs = document.querySelectorAll('.toggle-input');
+    toggleInputs.forEach(toggle => {
+        toggle.addEventListener('change', function() {
+            const label = this.nextElementSibling;
+            if (this.checked) {
+                label.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    label.style.transform = 'scale(1)';
+                }, 150);
+            }
+        });
+    });
+
+    // Current image click to enlarge
+    const currentImageContainer = document.querySelector('.current-image-container');
+    if (currentImageContainer) {
+        currentImageContainer.addEventListener('click', function() {
+            const img = this.querySelector('.current-image');
+            const modal = document.createElement('div');
+            modal.className = 'image-modal';
+            modal.innerHTML = `
+                <div class="modal-backdrop">
+                    <div class="modal-content">
+                        <img src="${img.src}" alt="Category image" class="modal-image">
+                        <button class="modal-close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close modal functionality
+            modal.addEventListener('click', function(e) {
+                if (e.target === this || e.target.classList.contains('modal-backdrop') || e.target.closest('.modal-close')) {
+                    document.body.removeChild(modal);
+                }
+            });
+        });
+    }
+});
+
+// Show message function
+function showMessage(message, type) {
+    // Remove existing messages
+    const existingAlert = document.querySelector('.alert-message');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
+
+    let alertClass, iconClass, bgColor;
+    
+    switch(type) {
+        case 'success':
+            alertClass = 'alert-success';
+            iconClass = 'fas fa-check-circle';
+            bgColor = 'var(--success-color)';
+            break;
+        case 'error':
+            alertClass = 'alert-error';
+            iconClass = 'fas fa-exclamation-triangle';
+            bgColor = 'var(--error-color)';
+            break;
+        case 'info':
+            alertClass = 'alert-info';
+            iconClass = 'fas fa-info-circle';
+            bgColor = 'var(--staff-accent)';
+            break;
+        default:
+            alertClass = 'alert-info';
+            iconClass = 'fas fa-info-circle';
+            bgColor = 'var(--staff-accent)';
+    }
+    
+    const alertHtml = `
+        <div class="alert-message ${alertClass}" style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            padding: 16px 20px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 300px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            animation: slideInAlert 0.3s ease-out;
+            background: ${bgColor};
+        ">
+            <i class="${iconClass}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', alertHtml);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        const alert = document.querySelector('.alert-message');
+        if (alert) {
+            alert.style.animation = 'slideOutAlert 0.3s ease-in';
+            setTimeout(() => alert.remove(), 300);
+        }
+    }, 4000);
+}
+
+// Add additional styles for modal and animations
+const additionalStyle = document.createElement('style');
+additionalStyle.textContent = `
+    /* Image Modal */
+    .image-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10000;
+        animation: fadeIn 0.3s ease-out;
+    }
+    
+    .modal-backdrop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    
+    .modal-content {
+        position: relative;
+        max-width: 90vw;
+        max-height: 90vh;
+    }
+    
+    .modal-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    .modal-close {
+        position: absolute;
+        top: -15px;
+        right: -15px;
+        width: 40px;
+        height: 40px;
+        background: var(--white);
+        border: none;
+        border-radius: 50%;
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal-close:hover {
+        background: var(--error-color);
+        color: white;
+        transform: scale(1.1);
+    }
+    
+    /* Alert Animations */
+    @keyframes slideInAlert {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOutAlert {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    /* Enhanced hover effects */
+    .form-control-custom:hover,
+    .textarea-control-custom:hover {
+        border-color: rgba(74, 144, 226, 0.5);
+    }
+    
+    .file-upload-area:hover .file-upload-icon {
+        transform: scale(1.1);
+    }
+    
+    .toggle-label:hover {
+        transform: scale(1.05);
+    }
+    
+    /* Focus styles for accessibility */
+    .btn-update-category:focus,
+    .btn-back:focus {
+        outline: 3px solid rgba(74, 144, 226, 0.3);
+        outline-offset: 2px;
+    }
+    
+    .form-control-custom:focus,
+    .textarea-control-custom:focus {
+        outline: none;
+    }
+    
+    .toggle-input:focus + .toggle-label {
+        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3);
+    }
+    
+    /* Success state for form submission */
+    .form-success {
+        animation: successPulse 0.6s ease-out;
+    }
+    
+    @keyframes successPulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+        100% { transform: scale(1); }
+    }
+    
+    /* Enhanced mobile responsiveness */
+    @media (max-width: 480px) {
+        .alert-message {
+            right: 10px;
+            left: 10px;
+            min-width: auto;
+        }
+        
+        .modal-backdrop {
+            padding: 10px;
+        }
+        
+        .modal-close {
+            top: -10px;
+            right: -10px;
+            width: 35px;
+            height: 35px;
+            font-size: 1rem;
+        }
+    }
+`;
+document.head.appendChild(additionalStyle);
+</script>
+
+{% endblock content %}

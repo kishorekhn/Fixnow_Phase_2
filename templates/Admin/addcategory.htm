@@ -1,0 +1,1168 @@
+{% extends 'base.htm' %}
+{% block title %}{% if service_to_update %}Update Category{% else %}Add Category{% endif %} | FIX-NOW Admin{% endblock title %}
+
+{% block content %}
+
+<!-- Category Management Section -->
+<section class="category-management-section">
+    <div class="container">
+        <div class="row">
+            <!-- Category Form Column -->
+            <div class="col-lg-5 col-md-6">
+                <div class="category-form-card">
+                    <!-- Header -->
+                    <div class="category-form-header">
+                        <div class="category-form-icon">
+                            <i class="fas fa-{% if service_to_update %}edit{% else %}plus-circle{% endif %}"></i>
+                        </div>
+                        <h2 class="category-form-title">
+                            {% if service_to_update %}Update Category{% else %}Add New Category{% endif %}
+                        </h2>
+                        <p class="category-form-subtitle">
+                            {% if service_to_update %}Modify category details{% else %}Create a new service category{% endif %}
+                        </p>
+                    </div>
+
+                    <!-- Category Form -->
+                    <div class="category-form">
+                        <form method="post" enctype="multipart/form-data" id="categoryForm">
+                            {% csrf_token %}
+                            
+                            <!-- Name Input -->
+                            <div class="input-group">
+                                <div class="input-icon">
+                                    <i class="fas fa-tag"></i>
+                                </div>
+                                <input type="text" 
+                                       name="name" 
+                                       placeholder="Category name" 
+                                       class="form-control-custom" 
+                                       id="nameInput"
+                                       value="{{ service_to_update.name|default:'' }}"
+                                       required>
+                            </div>
+                            <div class="input-help">
+                                <small>Enter the category name (e.g., Electronics, Plumbing)</small>
+                            </div>
+
+                            <!-- Description Input -->
+                            <div class="input-group">
+                                <div class="input-icon textarea-icon">
+                                    <i class="fas fa-align-left"></i>
+                                </div>
+                                <textarea name="description" 
+                                          placeholder="Category description" 
+                                          class="form-control-custom textarea-custom" 
+                                          id="descriptionInput"
+                                          rows="4">{{ service_to_update.description|default:'' }}</textarea>
+                            </div>
+                            <div class="input-help">
+                                <small>Provide a brief description of this category</small>
+                            </div>
+
+                            <!-- Image Upload -->
+                            <div class="image-upload-group">
+                                <label class="image-upload-label">
+                                    <div class="image-upload-area" id="imageUploadArea">
+                                        {% if service_to_update.image %}
+                                            <img src="{{ service_to_update.image.url }}" class="preview-image" id="previewImage">
+                                            <div class="image-overlay">
+                                                <i class="fas fa-camera"></i>
+                                                <span>Change Image</span>
+                                            </div>
+                                        {% else %}
+                                            <div class="upload-placeholder">
+                                                <i class="fas fa-cloud-upload-alt"></i>
+                                                <span>Upload Category Image</span>
+                                                <small>Click to browse or drag & drop</small>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <input type="file" name="image" id="imageInput" accept="image/*" hidden>
+                                </label>
+                                <div class="input-help">
+                                    <small>Recommended: 400x300px, JPG or PNG format</small>
+                                </div>
+                            </div>
+
+                            <!-- Checkboxes -->
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" 
+                                           name="popular" 
+                                           id="popularCheck" 
+                                           {% if service_to_update.popular %}checked{% endif %}>
+                                    <label for="popularCheck" class="checkbox-label">
+                                        <span class="checkbox-custom"></span>
+                                        <span class="checkbox-text">
+                                            <strong>Popular Category</strong>
+                                            <small>Display in featured categories</small>
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <div class="checkbox-item">
+                                    <input type="checkbox" 
+                                           name="shutdown" 
+                                           id="shutdownCheck" 
+                                           {% if service_to_update.shutdown %}checked{% endif %}>
+                                    <label for="shutdownCheck" class="checkbox-label">
+                                        <span class="checkbox-custom shutdown"></span>
+                                        <span class="checkbox-text">
+                                            <strong>Temporarily Shutdown</strong>
+                                            <small>Hide category from public view</small>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn-category-submit">
+                                <span class="btn-text">
+                                    {% if service_to_update %}Update Category{% else %}Add Category{% endif %}
+                                </span>
+                                <span class="btn-icon">
+                                    <i class="fas fa-{% if service_to_update %}save{% else %}plus{% endif %}"></i>
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories List Column -->
+            <div class="col-lg-7 col-md-6">
+                <div class="categories-list-card">
+                    <!-- Header -->
+                    <div class="categories-list-header">
+                        <h3 class="categories-list-title">
+                            <i class="fas fa-list"></i>
+                            All Categories
+                        </h3>
+                        <div class="categories-count">
+                            <span class="count-badge">{{ services|length }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Categories Table -->
+                    <div class="categories-table-container">
+                        {% if services %}
+                            <div class="categories-grid">
+                                {% for service in services %}
+                                    <div class="category-card {% if service.shutdown %}shutdown{% endif %}">
+                                        <div class="category-image">
+                                            {% if service.image %}
+                                                <img src="{{ service.image.url }}" alt="{{ service.name }}">
+                                            {% else %}
+                                                <div class="no-image">
+                                                    <i class="fas fa-image"></i>
+                                                </div>
+                                            {% endif %}
+                                            
+                                            <!-- Status Badges -->
+                                            <div class="category-badges">
+                                                {% if service.popular %}
+                                                    <span class="badge badge-popular">
+                                                        <i class="fas fa-star"></i>
+                                                        Popular
+                                                    </span>
+                                                {% endif %}
+                                                {% if service.shutdown %}
+                                                    <span class="badge badge-shutdown">
+                                                        <i class="fas fa-pause"></i>
+                                                        Shutdown
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                        <div class="category-content">
+                                            <h4 class="category-name">{{ service.name }}</h4>
+                                            <p class="category-description">
+                                                {{ service.description|truncatechars:80 }}
+                                            </p>
+                                        </div>
+
+                                        <div class="category-actions">
+                                            <a href="{% url 'update_category' service.pk %}" 
+                                               class="btn-action btn-edit"
+                                               title="Edit Category">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'delete_category' service.pk %}" 
+                                               class="btn-action btn-delete"
+                                               title="Delete Category"
+                                               onclick="return confirm('Are you sure you want to delete this category?')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <i class="fas fa-folder-open"></i>
+                                </div>
+                                <h4>No Categories Found</h4>
+                                <p>Start by adding your first service category</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+/* Import matching styles from staff login */
+:root {
+    --primary-color: #2C2C2C;
+    --accent-color: #00A699;
+    --text-color: #6F6F6F;
+    --background-color: #F7F7F7;
+    --white: #FFFFFF;
+    --hover-color: #008C84;
+    --light-gray: #F8F9FA;
+    --border-color: #E9ECEF;
+    --success-color: #28a745;
+    --error-color: #dc3545;
+    --warning-color: #ffc107;
+    --staff-accent: #4A90E2;
+    --staff-hover: #357ABD;
+}
+
+body {
+    background: linear-gradient(135deg, var(--background-color) 0%, #e8f4f8 100%);
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+}
+
+/* Category Management Section */
+.category-management-section {
+    padding: 120px 0 60px;
+    min-height: 100vh;
+}
+
+/* Category Form Card */
+.category-form-card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 40px 35px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(74, 144, 226, 0.1);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 30px;
+    height: fit-content;
+    position: sticky;
+    top: 30px;
+}
+
+.category-form-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--staff-accent), var(--staff-hover));
+}
+
+/* Form Header */
+.category-form-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.category-form-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, var(--staff-accent), var(--staff-hover));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: white;
+    font-size: 1.8rem;
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.3);
+}
+
+.category-form-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+
+.category-form-subtitle {
+    color: var(--text-color);
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+/* Form Styles */
+.input-group {
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.input-icon {
+    position: absolute;
+    left: 18px;
+    top: 18px;
+    color: var(--staff-accent);
+    font-size: 1rem;
+    z-index: 2;
+}
+
+.textarea-icon {
+    top: 18px;
+}
+
+.form-control-custom {
+    width: 100%;
+    padding: 16px 18px 16px 50px;
+    border: 2px solid var(--border-color);
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    background: var(--white);
+    transition: all 0.3s ease;
+    outline: none;
+    resize: none;
+}
+
+.textarea-custom {
+    min-height: 100px;
+    padding-top: 18px;
+    line-height: 1.5;
+}
+
+.form-control-custom:focus {
+    border-color: var(--staff-accent);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    transform: translateY(-1px);
+}
+
+.form-control-custom::placeholder {
+    color: var(--text-color);
+    font-weight: 400;
+}
+
+.input-help {
+    margin-bottom: 22px;
+    padding-left: 18px;
+}
+
+.input-help small {
+    color: var(--text-color);
+    font-size: 0.85rem;
+}
+
+/* Image Upload Styles */
+.image-upload-group {
+    margin-bottom: 25px;
+}
+
+.image-upload-area {
+    border: 2px dashed var(--border-color);
+    border-radius: 14px;
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    background: var(--light-gray);
+}
+
+.image-upload-area:hover {
+    border-color: var(--staff-accent);
+    background: rgba(74, 144, 226, 0.05);
+}
+
+.upload-placeholder {
+    color: var(--text-color);
+}
+
+.upload-placeholder i {
+    font-size: 2.5rem;
+    color: var(--staff-accent);
+    margin-bottom: 12px;
+    display: block;
+}
+
+.upload-placeholder span {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--primary-color);
+}
+
+.upload-placeholder small {
+    font-size: 0.85rem;
+}
+
+.preview-image {
+    width: 100%;
+    max-height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(74, 144, 226, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    color: white;
+}
+
+.image-upload-area:hover .image-overlay {
+    opacity: 1;
+}
+
+.image-overlay i {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+/* Checkbox Styles */
+.checkbox-group {
+    margin-bottom: 30px;
+}
+
+.checkbox-item {
+    margin-bottom: 18px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    margin-top: 2px;
+}
+
+.checkbox-custom.shutdown {
+    border-color: var(--error-color);
+}
+
+input[type="checkbox"]:checked + .checkbox-label .checkbox-custom {
+    background: var(--staff-accent);
+    border-color: var(--staff-accent);
+}
+
+input[type="checkbox"]:checked + .checkbox-label .checkbox-custom.shutdown {
+    background: var(--error-color);
+    border-color: var(--error-color);
+}
+
+input[type="checkbox"]:checked + .checkbox-label .checkbox-custom::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.checkbox-text strong {
+    display: block;
+    color: var(--primary-color);
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+}
+
+.checkbox-text small {
+    color: var(--text-color);
+    font-size: 0.8rem;
+}
+
+/* Submit Button */
+.btn-category-submit {
+    width: 100%;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, var(--staff-accent), var(--staff-hover));
+    border: none;
+    border-radius: 14px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-category-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+}
+
+.btn-category-submit::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-category-submit:hover::before {
+    left: 100%;
+}
+
+.btn-text, .btn-icon {
+    position: relative;
+    z-index: 1;
+}
+
+/* Categories List Card */
+.categories-list-card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 35px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 166, 153, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.categories-list-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-color), var(--hover-color));
+}
+
+.categories-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.categories-list-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.categories-list-title i {
+    color: var(--accent-color);
+}
+
+.count-badge {
+    background: var(--accent-color);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Categories Grid */
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.category-card {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.category-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    border-color: var(--accent-color);
+}
+
+.category-card.shutdown {
+    opacity: 0.7;
+    border-color: var(--error-color);
+}
+
+.category-image {
+    position: relative;
+    height: 140px;
+    overflow: hidden;
+    background: var(--light-gray);
+}
+
+.category-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-color);
+    font-size: 2rem;
+}
+
+.category-badges {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge-popular {
+    background: var(--warning-color);
+    color: white;
+}
+
+.badge-shutdown {
+    background: var(--error-color);
+    color: white;
+}
+
+.category-content {
+    padding: 20px;
+}
+
+.category-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.category-description {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.category-actions {
+    padding: 15px 20px;
+    background: var(--light-gray);
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.btn-action {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.btn-edit {
+    background: var(--staff-accent);
+    color: white;
+}
+
+.btn-edit:hover {
+    background: var(--staff-hover);
+    color: white;
+    transform: scale(1.1);
+}
+
+.btn-delete {
+    background: var(--error-color);
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #c82333;
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-color);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: var(--border-color);
+    margin-bottom: 20px;
+}
+
+.empty-state h4 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .category-management-section {
+        padding: 100px 0 40px;
+    }
+    
+    .category-form-card {
+        position: static;
+        margin-bottom: 30px;
+    }
+    
+    .categories-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .category-form-card,
+    .categories-list-card {
+        padding: 25px 20px;
+        margin: 15px;
+        border-radius: 16px;
+    }
+    
+    .category-form-title {
+        font-size: 1.5rem;
+    }
+    
+    .categories-list-title {
+        font-size: 1.3rem;
+    }
+    
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .categories-list-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 576px) {
+    .category-management-section {
+        padding: 80px 0 30px;
+    }
+    
+    .image-upload-area {
+        padding: 20px 15px;
+    }
+    
+    .upload-placeholder i {
+        font-size: 2rem;
+    }
+}
+
+/* Animation */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.category-form-card,
+.categories-list-card {
+    animation: slideUp 0.6s ease-out;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('categoryForm');
+    const nameInput = document.getElementById('nameInput');
+    const descriptionInput = document.getElementById('descriptionInput');
+    const imageInput = document.getElementById('imageInput');
+    const imageUploadArea = document.getElementById('imageUploadArea');
+    const submitBtn = document.querySelector('.btn-category-submit');
+
+    // Image upload preview
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imageUploadArea.innerHTML = `
+                    <img src="${e.target.result}" class="preview-image" id="previewImage">
+                    <div class="image-overlay">
+                        <i class="fas fa-camera"></i>
+                        <span>Change Image</span>
+                    </div>
+                `;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Drag and drop functionality
+    imageUploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.style.borderColor = 'var(--staff-accent)';
+        this.style.background = 'rgba(74, 144, 226, 0.1)';
+    });
+
+    imageUploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.style.borderColor = 'var(--border-color)';
+        this.style.background = 'var(--light-gray)';
+    });
+
+    imageUploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.style.borderColor = 'var(--border-color)';
+        this.style.background = 'var(--light-gray)';
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            imageInput.files = files;
+            imageInput.dispatchEvent(new Event('change'));
+        }
+    });
+
+    // Form validation
+    function validateForm() {
+        const name = nameInput.value.trim();
+        const description = descriptionInput.value.trim();
+        
+        if (name.length < 2) {
+            showMessage('Category name must be at least 2 characters long', 'error');
+            nameInput.focus();
+            return false;
+        }
+        
+        if (description.length < 10) {
+            showMessage('Description must be at least 10 characters long', 'error');
+            descriptionInput.focus();
+            return false;
+        }
+        
+        return true;
+    }
+
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        if (!validateForm()) {
+            e.preventDefault();
+            return;
+        }
+        
+        // Add loading state
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+        
+        const btnText = submitBtn.querySelector('.btn-text');
+        const originalText = btnText.textContent;
+        btnText.textContent = 'Processing...';
+        
+        // Show processing message
+        showMessage('Processing category...', 'info');
+    });
+
+    // Real-time validation feedback
+    nameInput.addEventListener('input', function() {
+        const isValid = this.value.trim().length >= 2;
+        this.style.borderColor = isValid ? 'var(--success-color)' : 'var(--error-color)';
+    });
+
+    descriptionInput.addEventListener('input', function() {
+        const isValid = this.value.trim().length >= 10;
+        this.style.borderColor = isValid ? 'var(--success-color)' : 'var(--error-color)';
+    });
+
+    // Auto-focus on name input
+    nameInput.focus();
+});
+
+// Show message function
+function showMessage(message, type) {
+    // Remove existing messages
+    const existingAlert = document.querySelector('.alert-message');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
+
+    let alertClass, iconClass, bgColor;
+    
+    switch(type) {
+        case 'success':
+            alertClass = 'alert-success';
+            iconClass = 'fas fa-check-circle';
+            bgColor = 'var(--success-color)';
+            break;
+        case 'error':
+            alertClass = 'alert-error';
+            iconClass = 'fas fa-exclamation-triangle';
+            bgColor = 'var(--error-color)';
+            break;
+        case 'info':
+            alertClass = 'alert-info';
+            iconClass = 'fas fa-info-circle';
+            bgColor = 'var(--staff-accent)';
+            break;
+        default:
+            alertClass = 'alert-info';
+            iconClass = 'fas fa-info-circle';
+            bgColor = 'var(--staff-accent)';
+    }
+    
+    const alertHtml = `
+        <div class="alert-message ${alertClass}" style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            padding: 16px 20px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 300px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            animation: slideIn 0.3s ease-out;
+            background: ${bgColor};
+        ">
+            <i class="${iconClass}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', alertHtml);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        const alert = document.querySelector('.alert-message');
+        if (alert) {
+            alert.style.animation = 'slideOut 0.3s ease-in';
+            setTimeout(() => alert.remove(), 300);
+        }
+    }, 4000);
+}
+
+// Add slide animations for messages
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+    
+    /* Loading state styles */
+    .btn-category-submit.loading {
+        pointer-events: none;
+        opacity: 0.8;
+    }
+
+    .btn-category-submit.loading::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top: 2px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Enhanced hover effects */
+    .category-card:hover .category-name {
+        color: var(--staff-accent);
+    }
+    
+    .form-control-custom:valid:not(:placeholder-shown) {
+        border-color: var(--success-color);
+    }
+    
+    .form-control-custom:invalid:not(:placeholder-shown) {
+        border-color: var(--error-color);
+    }
+    
+    /* Checkbox animation */
+    .checkbox-custom {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    input[type="checkbox"]:checked + .checkbox-label .checkbox-custom {
+        transform: scale(1.1);
+    }
+    
+    /* Success state for form */
+    .form-success .category-form-card::before {
+        background: linear-gradient(90deg, var(--success-color), #20c997);
+    }
+    
+    /* Image upload hover effect */
+    .image-upload-area:hover .upload-placeholder i {
+        transform: scale(1.1);
+        color: var(--staff-accent);
+    }
+`;
+document.head.appendChild(style);
+
+// Initialize tooltips and additional functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Add smooth scrolling for better UX
+    if (window.location.hash) {
+        const target = document.querySelector(window.location.hash);
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+    
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + S to save form
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            const form = document.getElementById('categoryForm');
+            if (form) {
+                form.dispatchEvent(new Event('submit'));
+            }
+        }
+        
+        // Escape to clear form
+        if (e.key === 'Escape') {
+            const form = document.getElementById('categoryForm');
+            if (form && confirm('Clear form data?')) {
+                form.reset();
+                const previewImage = document.getElementById('previewImage');
+                if (previewImage) {
+                    location.reload();
+                }
+            }
+        }
+    });
+    
+    // Add auto-save functionality (optional)
+    const inputs = document.querySelectorAll('#categoryForm input, #categoryForm textarea');
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            // Save to localStorage for draft functionality
+            const formData = new FormData(document.getElementById('categoryForm'));
+            const data = Object.fromEntries(formData.entries());
+            localStorage.setItem('categoryFormDraft', JSON.stringify(data));
+        });
+    });
+    
+    // Load draft data if available
+    const draftData = localStorage.getItem('categoryFormDraft');
+    if (draftData && !document.querySelector('input[name="name"]').value) {
+        try {
+            const data = JSON.parse(draftData);
+            Object.keys(data).forEach(key => {
+                const input = document.querySelector(`[name="${key}"]`);
+                if (input && input.type !== 'file') {
+                    if (input.type === 'checkbox') {
+                        input.checked = data[key] === 'on';
+                    } else {
+                        input.value = data[key];
+                    }
+                }
+            });
+            showMessage('Draft data restored', 'info');
+        } catch (e) {
+            console.log('Could not restore draft data');
+        }
+    }
+    
+    // Clear draft on successful submission
+    const form = document.getElementById('categoryForm');
+    form.addEventListener('submit', function() {
+        localStorage.removeItem('categoryFormDraft');
+    });
+});
+</script>
+
+{% endblock content %}

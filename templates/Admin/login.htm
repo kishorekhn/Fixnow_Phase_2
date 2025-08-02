@@ -1,0 +1,745 @@
+{% extends 'base.htm' %}
+{% block title %}Staff Login | FIX-NOW{% endblock title %}
+
+{% block content %}
+
+<!-- Staff Login Section -->
+<section class="staff-login-section">
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100">
+            <div class="col-lg-5 col-md-7 col-sm-9">
+                <!-- Staff Login Card -->
+                <div class="staff-login-card">
+                    <!-- Header -->
+                    <div class="staff-login-header">
+                        <div class="staff-login-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h2 class="staff-login-title">Staff Portal</h2>
+                        <p class="staff-login-subtitle">Access your FIX-NOW staff dashboard</p>
+                    </div>
+
+                    <!-- Error Message -->
+                    {% if error %}
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>{{ error }}</span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Staff Login Form -->
+                    <div class="staff-login-form">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <!-- Username Input Group -->
+                            <div class="input-group">
+                                <div class="input-icon">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <input type="text" 
+                                       name="username" 
+                                       placeholder="Enter username" 
+                                       class="form-control-custom" 
+                                       id="usernameInput"
+                                       required>
+                            </div>
+                            <div class="input-help">
+                                <small>Enter your assigned username</small>
+                            </div>
+
+                            <!-- Password Input Group -->
+                            <div class="input-group">
+                                <div class="input-icon">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <input type="password" 
+                                       name="password" 
+                                       placeholder="Enter password" 
+                                       class="form-control-custom" 
+                                       id="passwordInput"
+                                       required>
+                                <div class="password-toggle" onclick="togglePassword()">
+                                    <i class="fas fa-eye" id="passwordToggleIcon"></i>
+                                </div>
+                            </div>
+                            <div class="input-help">
+                                <small>Enter your secure password</small>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn-staff-login">
+                                <span class="btn-text">Sign In</span>
+                                <span class="btn-icon">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Footer Info -->
+                    <div class="staff-login-footer">
+                        <div class="security-info">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Secure staff access</span>
+                        </div>
+                        <div class="help-text">
+                            <p>Having trouble? <a href="mailto:admin@fixnow.com">Contact Admin</a></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staff Features -->
+                <div class="staff-features">
+                    <div class="feature-item">
+                        <i class="fas fa-tasks"></i>
+                        <span>Manage Orders</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-users"></i>
+                        <span>Customer Support</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Analytics</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+/* Import matching styles */
+:root {
+    --primary-color: #2C2C2C;
+    --accent-color: #00A699;
+    --text-color: #6F6F6F;
+    --background-color: #F7F7F7;
+    --white: #FFFFFF;
+    --hover-color: #008C84;
+    --light-gray: #F8F9FA;
+    --border-color: #E9ECEF;
+    --success-color: #28a745;
+    --error-color: #dc3545;
+    --staff-accent: #4A90E2;
+    --staff-hover: #357ABD;
+}
+
+body {
+    background: linear-gradient(135deg, var(--background-color) 0%, #e8f4f8 100%);
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+}
+
+/* Staff Login Section */
+.staff-login-section {
+    padding: 100px 0 60px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+/* Staff Login Card */
+.staff-login-card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 50px 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(74, 144, 226, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.staff-login-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--staff-accent), var(--staff-hover));
+}
+
+/* Staff Login Header */
+.staff-login-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.staff-login-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--staff-accent), var(--staff-hover));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    color: white;
+    font-size: 2rem;
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.3);
+}
+
+.staff-login-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 12px;
+    line-height: 1.2;
+}
+
+.staff-login-subtitle {
+    color: var(--text-color);
+    font-size: 1.1rem;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+/* Error Message */
+.error-message {
+    background: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.2);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--error-color);
+    font-weight: 500;
+    animation: shake 0.5s ease-in-out;
+}
+
+.error-message i {
+    font-size: 1.1rem;
+    color: var(--error-color);
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Form Styles */
+.staff-login-form {
+    margin-bottom: 30px;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.input-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--staff-accent);
+    font-size: 1.1rem;
+    z-index: 2;
+}
+
+.form-control-custom {
+    width: 100%;
+    padding: 18px 20px 18px 55px;
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    background: var(--white);
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.form-control-custom:focus {
+    border-color: var(--staff-accent);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    transform: translateY(-1px);
+}
+
+.form-control-custom::placeholder {
+    color: var(--text-color);
+    font-weight: 400;
+}
+
+/* Password Toggle */
+.password-toggle {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 1.1rem;
+    z-index: 2;
+    transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+    color: var(--staff-accent);
+}
+
+.input-help {
+    margin-bottom: 25px;
+    padding-left: 20px;
+}
+
+.input-help small {
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+/* Staff Login Button */
+.btn-staff-login {
+    width: 100%;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, var(--staff-accent), var(--staff-hover));
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-staff-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+}
+
+.btn-staff-login:active {
+    transform: translateY(0);
+}
+
+.btn-staff-login::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-staff-login:hover::before {
+    left: 100%;
+}
+
+.btn-text {
+    position: relative;
+    z-index: 1;
+}
+
+.btn-icon {
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease;
+}
+
+.btn-staff-login:hover .btn-icon {
+    transform: translateX(4px);
+}
+
+/* Staff Login Footer */
+.staff-login-footer {
+    text-align: center;
+    padding-top: 30px;
+    border-top: 1px solid var(--border-color);
+}
+
+.security-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--staff-accent);
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 16px;
+}
+
+.security-info i {
+    font-size: 1.1rem;
+}
+
+.help-text p {
+    color: var(--text-color);
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.help-text a {
+    color: var(--staff-accent);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.help-text a:hover {
+    color: var(--staff-hover);
+    text-decoration: underline;
+}
+
+/* Staff Features */
+.staff-features {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding: 20px 0;
+}
+
+.feature-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.feature-item i {
+    font-size: 1.5rem;
+    color: var(--staff-accent);
+    margin-bottom: 4px;
+}
+
+/* Loading State */
+.btn-staff-login.loading {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.btn-staff-login.loading .btn-text {
+    opacity: 0;
+}
+
+.btn-staff-login.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .staff-login-section {
+        padding: 80px 0 40px;
+    }
+    
+    .staff-login-card {
+        padding: 40px 30px;
+        margin: 20px;
+        border-radius: 20px;
+    }
+    
+    .staff-login-title {
+        font-size: 1.8rem;
+    }
+    
+    .staff-login-subtitle {
+        font-size: 1rem;
+    }
+    
+    .staff-login-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 1.8rem;
+    }
+    
+    .form-control-custom {
+        padding: 16px 18px 16px 50px;
+        font-size: 1rem;
+    }
+    
+    .input-icon {
+        left: 18px;
+        font-size: 1rem;
+    }
+    
+    .password-toggle {
+        right: 18px;
+    }
+    
+    .btn-staff-login {
+        padding: 16px 20px;
+        font-size: 1rem;
+    }
+    
+    .staff-features {
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+    }
+    
+    .feature-item {
+        flex-direction: row;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .staff-login-card {
+        padding: 30px 20px;
+        margin: 15px;
+    }
+    
+    .staff-login-title {
+        font-size: 1.6rem;
+    }
+    
+    .staff-features {
+        margin-top: 30px;
+    }
+}
+
+/* Animation for card entrance */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.staff-login-card {
+    animation: slideUp 0.6s ease-out;
+}
+
+/* Focus styles for accessibility */
+.btn-staff-login:focus {
+    outline: 3px solid rgba(74, 144, 226, 0.3);
+    outline-offset: 2px;
+}
+
+.form-control-custom:focus {
+    outline: none;
+}
+
+/* Form validation styles */
+.form-control-custom:invalid:not(:placeholder-shown) {
+    border-color: var(--error-color);
+}
+
+.form-control-custom:valid:not(:placeholder-shown) {
+    border-color: var(--success-color);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const usernameInput = document.getElementById('usernameInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const staffLoginBtn = document.querySelector('.btn-staff-login');
+    const form = document.querySelector('form');
+
+    // Form validation
+    function validateForm() {
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
+        
+        return username.length >= 3 && password.length >= 6;
+    }
+
+    // Real-time validation feedback
+    [usernameInput, passwordInput].forEach(input => {
+        input.addEventListener('input', function() {
+            const isValid = this.value.trim().length >= (this.type === 'password' ? 6 : 3);
+            
+            if (this.value.length > 0) {
+                if (isValid) {
+                    this.classList.add('valid');
+                    this.classList.remove('invalid');
+                } else {
+                    this.classList.add('invalid');
+                    this.classList.remove('valid');
+                }
+            } else {
+                this.classList.remove('valid', 'invalid');
+            }
+        });
+    });
+
+    // Form submission with loading state
+    form.addEventListener('submit', function(e) {
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
+        
+        // Basic validation
+        if (username.length < 3) {
+            e.preventDefault();
+            usernameInput.focus();
+            usernameInput.classList.add('invalid');
+            showMessage('Username must be at least 3 characters long', 'error');
+            return;
+        }
+
+        if (password.length < 6) {
+            e.preventDefault();
+            passwordInput.focus();
+            passwordInput.classList.add('invalid');
+            showMessage('Password must be at least 6 characters long', 'error');
+            return;
+        }
+
+        // Add loading state
+        staffLoginBtn.classList.add('loading');
+        staffLoginBtn.disabled = true;
+        
+        // Show processing message
+        showMessage('Authenticating...', 'info');
+    });
+
+    // Auto-focus on username input
+    usernameInput.focus();
+
+    // Enter key support
+    usernameInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            passwordInput.focus();
+        }
+    });
+
+    passwordInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            form.submit();
+        }
+    });
+});
+
+// Password toggle functionality
+function togglePassword() {
+    const passwordInput = document.getElementById('passwordInput');
+    const toggleIcon = document.getElementById('passwordToggleIcon');
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.classList.remove('fa-eye');
+        toggleIcon.classList.add('fa-eye-slash');
+    } else {
+        passwordInput.type = 'password';
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.add('fa-eye');
+    }
+}
+
+// Show message function
+function showMessage(message, type) {
+    // Remove existing messages
+    const existingAlert = document.querySelector('.alert-message');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
+
+    let alertClass, iconClass, bgColor;
+    
+    switch(type) {
+        case 'success':
+            alertClass = 'alert-success';
+            iconClass = 'fas fa-check-circle';
+            bgColor = 'var(--success-color)';
+            break;
+        case 'error':
+            alertClass = 'alert-error';
+            iconClass = 'fas fa-exclamation-triangle';
+            bgColor = 'var(--error-color)';
+            break;
+        case 'info':
+            alertClass = 'alert-info';
+            iconClass = 'fas fa-info-circle';
+            bgColor = 'var(--staff-accent)';
+            break;
+        default:
+            alertClass = 'alert-info';
+            iconClass = 'fas fa-info-circle';
+            bgColor = 'var(--staff-accent)';
+    }
+    
+    const alertHtml = `
+        <div class="alert-message ${alertClass}" style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            padding: 16px 20px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 300px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            animation: slideIn 0.3s ease-out;
+            background: ${bgColor};
+        ">
+            <i class="${iconClass}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', alertHtml);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        const alert = document.querySelector('.alert-message');
+        if (alert) {
+            alert.style.animation = 'slideOut 0.3s ease-in';
+            setTimeout(() => alert.remove(), 300);
+        }
+    }, 4000);
+}
+
+// Add slide animations for messages
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>
+
+{% endblock content %}
