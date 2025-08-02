@@ -1,6 +1,6 @@
 {% extends 'base.htm' %}
 
-{% block title %}My Orders | FIX-NOW - Home Appliance Services{% endblock title %}
+{% block title %}My Cart | FIX-NOW - Home Appliance Services{% endblock title %}
 
 {% block content %}
 {% include "Utils/navbar.htm" %}
@@ -13,16 +13,16 @@
                 <div class="header-content">
                     <h1 class="page-title">
                         <i class="fas fa-clipboard-list me-3"></i>
-                        My Orders
+                        My Cart
                     </h1>
-                    <p class="page-subtitle">Track and manage your home appliance service orders</p>
+                    <p class="page-subtitle">Track and manage your home appliance service Cart</p>
                 </div>
             </div>
             <div class="col-lg-4 text-lg-end">
                 <div class="header-stats">
                     <div class="stat-item">
                         <span class="stat-number">{{ cart_items|length }}</span>
-                        <span class="stat-label">Total Orders</span>
+                        <span class="stat-label">Total Services</span>
                     </div>
                 </div>
             </div>
@@ -47,7 +47,7 @@
                 <div class="col-lg-4 text-lg-end">
                     <div class="summary-actions">
                         <a href="tel:+918098606019" class="btn btn-accent btn-lg">
-                            <i class="fas fa-phone me-2"></i>Book All Services
+                            <i class="fas fa-phone me-2"></i>Purchase all the services
                         </a>
                     </div>
                 </div>
@@ -164,7 +164,7 @@
                 <div class="empty-icon">
                     <i class="fas fa-shopping-cart"></i>
                 </div>
-                <h3 class="empty-title">No Orders Yet</h3>
+                <h3 class="empty-title">No Services Added Yet</h3>
                 <p class="empty-text">You haven't added any services to your cart yet. Browse our expert home appliance services and book the ones you need.</p>
                 <div class="empty-actions">
                     <a href="{% url 'home' %}#services" class="btn btn-accent btn-lg">
